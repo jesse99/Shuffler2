@@ -11,5 +11,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
     }
+    
+    let store = FileSystemStore.init("/Users/jessejones/Source/Shuffler2/pictures")
 }
 

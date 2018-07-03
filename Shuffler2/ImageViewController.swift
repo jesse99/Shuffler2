@@ -11,12 +11,17 @@ class ImageViewController: NSViewController {
     override func viewWillAppear() {
         setupWindow()
         
-        let path = "/Users/jessejones/Downloads/Screen Shot.png"
-        _ = setImage(path, scaling: 1.0, align: .alignCenter)
+        let app = NSApp.delegate as! AppDelegate
+        let key = app.store.randomImage()
+        if let data = app.store.loadImage(key) {
+            _ = setImage(data, scaling: 1.0, align: .alignCenter)
+        } else {
+            print("failed to load \(key)")
+        }
     }
     
-    func setImage(_ path: String, scaling: CGFloat, align: NSImageAlignment) -> Bool {
-        if let rep = NSImageRep.init(contentsOfFile: path) {
+    func setImage(_ data: Data, scaling: CGFloat, align: NSImageAlignment) -> Bool {
+        if let rep = NSBitmapImageRep.init(data: data) {
             var imageSize = rep.size
             let windowSize = view.window!.frame.size
             let maxScaling = min(windowSize.width/imageSize.width, windowSize.height/imageSize.height)
