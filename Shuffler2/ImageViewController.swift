@@ -77,19 +77,16 @@ class ImageViewController: NSViewController {
             var imageSize = rep.size
             let windowSize = view.window!.frame.size
             let maxScaling = min(windowSize.width/imageSize.width, windowSize.height/imageSize.height)
+//            print("windowSize = \(windowSize)")
+//            print("   maxScaling = \(maxScaling)")
+//            print("   imageSize = \(imageSize)")
             
-            if scaling == CGFloat.infinity {
-                if maxScaling > 1.0 {
-                    imageSize.width *= maxScaling
-                    imageSize.height *= maxScaling
-                    rep.size = imageSize
-                }
-            } else if (scaling != 1.0) {
-                imageSize.width *= scaling
-                imageSize.height *= scaling
-                rep.size = imageSize
-            }
-            
+            let imageScaling = min(scaling, maxScaling)
+            imageSize.width *= imageScaling
+            imageSize.height *= imageScaling
+            rep.size = imageSize
+//            print("   imageSize = \(imageSize)")
+
             let image = NSImage.init(size: imageSize)
             image.addRepresentation(rep)
             imageView.image = image
