@@ -43,6 +43,14 @@ ssize_t fsgetpath(\cf3 char\cf4  *, \cf3 size_t\cf4 , fsid_t *, \cf3 uint64_t\cf
 
 \f0\fs48 \cf2 \
 \
+normal		1\
+good			4\
+great			16\
+fantastic	64\
+not-shown 64\
+\
+\
+\
 on startup\
 	spin up a thread to count items in directories\
 		great first\
@@ -51,14 +59,14 @@ on startup\
 store should only return image files\
 	maybe warn for non-images\
 picking an image\
-	max_score = sum of non-zero directories\
+	max_score = sum of non-zero directories scaled by rating\
 		probably want to maintain a count of items in each directory\
 	roll dice and pick a directory\
 	pick a random file in that directory\
 	move it into shown pictures\
-tags list comes from directory names\
 may want to just stick with current rating scheme\
 	having multiple copies of the file will work\
+should we have a log window? could print errors and status there\
 	\
 what about scaling and alignment?\
 	can use xattr to store arbitrary strings\

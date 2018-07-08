@@ -2,13 +2,45 @@
 //  Copyright © 2018 MushinApps. All rights reserved.
 import Foundation
 
-// Used by stores to identify an image.
+/// Values are used to weight pictures so that they are shown more often.
+public enum Rating: Int, Comparable {
+    case normal = 1
+    case good = 4
+    case great = 16
+    case fantastic = 64
+    case notShown = 65
+
+    init?(fromString: String) {
+        switch fromString.lowercased() {
+        case "normal":
+            self = .normal
+        case "good":
+            self = .good
+        case "great":
+            self = .great
+        case "fantastic":
+            self = .fantastic
+        case "not-shown":
+            self = .notShown
+        default:
+            return nil
+        }
+    }
+    
+    public static func <(lhs: Rating, rhs: Rating) -> Bool {
+        return lhs.rawValue < rhs.rawValue
+    }
+}
+
+/// Used by stores to identify an image.
 protocol Key: CustomStringConvertible {
 }
 
-// Interface used to access images.
+/// Interface used to access images.
 protocol Store {
-    func randomImage() -> Key
+    func start()
+    
+    func randomImage() -> Key?
     
     func loadImage(_ key: Key) -> Data?
 }

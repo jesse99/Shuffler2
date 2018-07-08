@@ -23,13 +23,16 @@ class ImageViewController: NSViewController {
         while true {
             if images.isEmpty || currentIndex >= images.count - 1 {
                 let app = NSApp.delegate as! AppDelegate
-                let key = app.store.randomImage()
-                
-                images.append(key)
-                if images.count > 100 {     // we only allow the user to go backwards 100x
-                    images.remove(at: 0)
+                if let key = app.store.randomImage() {
+                    images.append(key)
+                    if images.count > 100 {     // we only allow the user to go backwards 100x
+                        images.remove(at: 0)
+                    }
+                    currentIndex = images.count - 1
+                } else {
+                    NSSound.beep()
+                    return
                 }
-                currentIndex = images.count - 1
 
             } else {
                 currentIndex += 1
