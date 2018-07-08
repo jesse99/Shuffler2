@@ -5,7 +5,6 @@ import Cocoa
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        store.start()
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {

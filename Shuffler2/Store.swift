@@ -38,8 +38,6 @@ protocol Key: CustomStringConvertible {
 
 /// Interface used to access images.
 protocol Store {
-    func start()
-    
     func randomImage() -> Key?
     
     func loadImage(_ key: Key) -> Data?
