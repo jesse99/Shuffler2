@@ -85,6 +85,47 @@ class FileSystemStore: Store {
         return nil
     }
     
+    // It's a lot easier to just do the enumeration on demand: we don't have to deal with thread coordination,
+    // or the file system changing out from underneath us (as much), or weird special cases as we empty out
+    // the upcoming directory.
+    private func randomFile(_ directory: Directory) -> URL? {
+        var n = Int(arc4random_uniform(100))    // to avoid spending too much time enumerating we'll use a 1 in 100 chance of picking each file
+        var result: URL? = nil
+        
+//        let start = DispatchTime.now()  // takes well under 10 ms to process 100 files
+//        var count = 0
+        
+        // It would be a bit nicer to start at a random spot in the directory (and maybe cycle around if need be).
+        // But the high level APIs don't support that sort of random access iteration. Documentation is scarce
+        // on the low level APIs but Darwin is derived from FreeBSD which has functions like seekdir which
+        // supports resuming iteration which could be made to work.
+        let fs = FileManager.default
+        let options: FileManager.DirectoryEnumerationOptions = [.skipsPackageDescendants, .skipsHiddenFiles]
+        if let enumerator = fs.enumerator(at: directory.url, includingPropertiesForKeys: [.isDirectoryKey, .nameKey], options: options, errorHandler: nil) {
+            for case let candidate as URL in enumerator {
+                if canShow(candidate) {
+//                    count += 1
+                    n -= 1
+                    result = candidate
+                    if n <= 0 {
+                        break
+                    }
+                } else if !candidate.hasDirectoryPath {
+                    let app = NSApp.delegate as! AppDelegate
+                    app.error("can't show \(candidate)")
+                }
+            }
+        }
+        
+//        let end = DispatchTime.now()
+//        let ns = end.uptimeNanoseconds - start.uptimeNanoseconds
+//        let us = ns/1000
+//        let ms = us/1000
+//        print("took \(ms) ms to enumerate \(count) files")
+
+        return result
+    }
+    
     private func hasImage(_ dir: Directory) -> Bool {
         let fs = FileManager.default
         
@@ -104,7 +145,7 @@ class FileSystemStore: Store {
         if !file.hasDirectoryPath {
             let ext = file.pathExtension as CFString
             if let uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, ext, nil) {
-                print("\(NSBitmapImageRep.imageTypes)")
+//                print("\(NSBitmapImageRep.imageTypes)")
                 for case let type as CFString in NSBitmapImageRep.imageTypes {
                     if UTTypeConformsTo((uti.takeRetainedValue()), type) {
                         return true
@@ -114,40 +155,7 @@ class FileSystemStore: Store {
         }
         return false
     }
-    
-    // It's a lot easier to just do the enumeration on demand: we don't have to deal with thread coordination,
-    // or the file system changing out from underneath us (as much), or weird special cases as we empty out
-    // the upcoming directory.
-    private func randomFile(_ directory: Directory) -> URL? {
-        // TODO:
-        // time how long it takes to enumerate 100 files
-        var n = Int(arc4random_uniform(100))    // to avoid spending too much time enumerating we'll use a 1 in 100 chance of picking each file
-        var result: URL? = nil
 
-        // It would be a bit nicer to start at a random spot in the directory (and maybe cycle around if need be).
-        // But the high level APIs don't support that sort of random access iteration. Documentation is scarce
-        // on the low level APIs but Darwin is derived from FreeBSD which has functions like seekdir which
-        // supports resuming iteration which could be made to work.
-        let fs = FileManager.default
-        let options: FileManager.DirectoryEnumerationOptions = [.skipsPackageDescendants, .skipsHiddenFiles]
-        if let enumerator = fs.enumerator(at: directory.url, includingPropertiesForKeys: [.isDirectoryKey, .nameKey], options: options, errorHandler: nil) {
-            for case let candidate as URL in enumerator {
-                if canShow(candidate) {
-                    n -= 1
-                    result = candidate
-                    if n <= 0 {
-                        break
-                    }
-                } else if !candidate.hasDirectoryPath {
-                    let app = NSApp.delegate as! AppDelegate
-                    app.error("can't show \(candidate)")
-                }
-            }
-        }
-        
-        return result
-    }
-    
     private struct Directory: CustomStringConvertible {
         let url: URL
         let rating: Rating
