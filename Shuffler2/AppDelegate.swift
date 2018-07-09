@@ -11,8 +11,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Insert code here to tear down your application
     }
     
-    func error(_ text: String) {
+    func info(_ text: String) {
         print(text)
+    }
+    
+    func warn(_ text: String) {
+        print("warning:" + text)
+    }
+    
+    func error(_ text: String) {
+        print("error:" + text)
     }
     
     // It'd be nicer to put these on the ImageViewController but that's a background sort of

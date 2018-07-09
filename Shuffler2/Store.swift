@@ -3,7 +3,7 @@
 import Foundation
 
 /// Values are used to weight pictures so that they are shown more often.
-public enum Rating: Int, Comparable {
+public enum Rating: Int, Comparable, CustomStringConvertible {
     case normal = 1
     case good = 4
     case great = 16
@@ -27,6 +27,18 @@ public enum Rating: Int, Comparable {
         }
     }
     
+    public var description: String {
+        get {
+            switch self {
+            case .normal: return "normal"
+            case .good: return "good"
+            case .great: return "great"
+            case .fantastic: return "fantastic"
+            case .notShown: return "not-shown"
+            }
+        }
+    }
+
     public static func <(lhs: Rating, rhs: Rating) -> Bool {
         return lhs.rawValue < rhs.rawValue
     }

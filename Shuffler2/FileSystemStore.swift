@@ -23,8 +23,12 @@ class FileSystemStore: Store {
     func randomImage() -> Key? {
         let directories = findUpcomingDirectories()
         // TODO: prune directories using selected tags and rating
-        if let directory = randomDirectory(directories), let file = randomFile(directory) {
-            return FileSystemKey.init(file)
+        if let directory = randomDirectory(directories), let originalFile = randomFile(directory) {
+            if let newFile = moveFile(directory, originalFile) {
+                return FileSystemKey.init(newFile)
+            } else {
+                return FileSystemKey.init(originalFile) // not ideal but shouldn't actually cause a problem
+            }
         } else {
             // TODO: flip the directories (but only if randomDirectory failed)
             return nil
@@ -34,6 +38,41 @@ class FileSystemStore: Store {
     func loadImage(_ key: Key) -> Data? {
         let fsKey = key as! FileSystemKey
         return try? Data.init(contentsOf: fsKey.url)
+    }
+    
+    private func moveFile(_ originalDir: Directory, _ originalFile: URL) -> URL? {
+        var dirName = ""
+        if originalDir.rating == .notShown {
+            dirName += "normal"
+        } else {
+            dirName += originalDir.rating.description
+        }
+        if !originalDir.tags.isEmpty {
+            dirName += "-" + originalDir.tags.joined(separator: "-")
+        }
+
+        var newFile = root.appendingPathComponent("shown")
+        newFile = newFile.appendingPathComponent(dirName)
+
+        let fs = FileManager.default
+        do {
+            try fs.createDirectory(at: newFile, withIntermediateDirectories: true, attributes: [:])
+        } catch let error as NSError {
+            let app = NSApp.delegate as! AppDelegate
+            app.error("Couldn't create \(newFile): \(error.localizedDescription)")
+            return nil
+        }
+
+        newFile = newFile.appendingPathComponent(originalFile.lastPathComponent)
+        do {
+            try fs.moveItem(at: originalFile, to: newFile)
+        } catch let error as NSError {
+            let app = NSApp.delegate as! AppDelegate
+            app.error("Couldn't move \(originalFile) to \(newFile): \(error.localizedDescription)")
+            return nil
+        }
+
+        return newFile
     }
     
     private func findUpcomingDirectories() -> [Directory] {
@@ -47,17 +86,10 @@ class FileSystemStore: Store {
         if let enumerator = fs.enumerator(at: upcoming, includingPropertiesForKeys: [.isDirectoryKey, .nameKey], options: options, errorHandler: nil) {
             for case let dir as URL in enumerator {
                 if dir.hasDirectoryPath {
-                    let name = dir.lastPathComponent
-                    if name == "not-shown" {
-                        directories.append(Directory(url: dir, rating: Rating.init(fromString: name)!, tags: []))
+                    if let (rating, tags) = getRatingAndTags(dir) {
+                        directories.append(Directory(url: dir, rating: rating, tags: tags))
                     } else {
-                        var tags = name.components(separatedBy: "-")
-                        if let rating = Rating.init(fromString: tags[0]) {
-                            tags.remove(at: 0)
-                            directories.append(Directory(url: dir, rating: rating, tags: tags))
-                        } else {
-                            app.error("directory \(dir) has an invalid rating")
-                        }
+                        app.error("directory \(dir) has an invalid rating")
                     }
                 }
             }
@@ -67,12 +99,11 @@ class FileSystemStore: Store {
     }
     
     private func randomDirectory(_ directories: [Directory]) -> Directory? {
-        let maxWeight = directories.reduce(0) { (sum, dir) -> Int in
-            return self.hasImage(dir) ? sum + dir.rating.rawValue : sum
-        }
+        let dirs = directories.filter {self.hasImage($0)}
+        let maxWeight = dirs.reduce(0) {$0 + $1.rating.rawValue}
         if maxWeight > 0 {
             var n = Int(arc4random_uniform(UInt32(maxWeight)))
-            for candidate in directories {
+            for candidate in dirs {
                 n -= candidate.rating.rawValue
                 if n <= 0 {
                     return candidate
@@ -81,6 +112,8 @@ class FileSystemStore: Store {
             assert(false)
         } else {
             // This is expected once we show all the pictures in incoming.
+            let app = NSApp.delegate as! AppDelegate
+            app.info("couldn't find a directory with an image")
         }
         return nil
     }
@@ -92,8 +125,8 @@ class FileSystemStore: Store {
         var n = Int(arc4random_uniform(100))    // to avoid spending too much time enumerating we'll use a 1 in 100 chance of picking each file
         var result: URL? = nil
         
-//        let start = DispatchTime.now()  // takes well under 10 ms to process 100 files
-//        var count = 0
+        let start = DispatchTime.now()  // takes well under 10 ms to process 100 files
+        var count = 0
         
         // It would be a bit nicer to start at a random spot in the directory (and maybe cycle around if need be).
         // But the high level APIs don't support that sort of random access iteration. Documentation is scarce
@@ -104,7 +137,7 @@ class FileSystemStore: Store {
         if let enumerator = fs.enumerator(at: directory.url, includingPropertiesForKeys: [.isDirectoryKey, .nameKey], options: options, errorHandler: nil) {
             for case let candidate as URL in enumerator {
                 if canShow(candidate) {
-//                    count += 1
+                    count += 1
                     n -= 1
                     result = candidate
                     if n <= 0 {
@@ -117,13 +150,37 @@ class FileSystemStore: Store {
             }
         }
         
-//        let end = DispatchTime.now()
-//        let ns = end.uptimeNanoseconds - start.uptimeNanoseconds
-//        let us = ns/1000
-//        let ms = us/1000
-//        print("took \(ms) ms to enumerate \(count) files")
+        if result == nil {
+            let app = NSApp.delegate as! AppDelegate
+            app.warn("couldn't find an image in \(directory)")
+        }
+        
+        // "0.1 second is about the limit for having the user feel that the system is reacting instantaneously"
+        // see https://psychology.stackexchange.com/questions/1664/what-is-the-threshold-where-actions-are-perceived-as-instant
+        let end = DispatchTime.now()
+        let ns = end.uptimeNanoseconds - start.uptimeNanoseconds
+        let us = ns/1000
+        let ms = us/1000
+        if ms > 100 {
+            let app = NSApp.delegate as! AppDelegate
+            app.warn("took \(ms) ms to enumerate \(count) files")
+        }
 
         return result
+    }
+    
+    private func getRatingAndTags(_ dir: URL) -> (Rating, [String])? {
+        let name = dir.lastPathComponent
+        if name == "not-shown" {
+            return (Rating.init(fromString: name)!, tags: [])
+        } else {
+            var tags = name.components(separatedBy: "-")
+            if let rating = Rating.init(fromString: tags[0]) {
+                tags.remove(at: 0)
+                return (rating, tags)
+            }
+        }
+        return nil
     }
     
     private func hasImage(_ dir: Directory) -> Bool {
