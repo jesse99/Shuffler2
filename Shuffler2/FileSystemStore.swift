@@ -40,6 +40,18 @@ class FileSystemStore: Store {
         return try? Data.init(contentsOf: fsKey.url)
     }
     
+    private func generateNewName(_ newDir: URL, _ originalFile: URL) -> URL {
+        var i = 2;
+        let fs = FileManager.default
+        var newFile = newDir.appendingPathComponent(originalFile.lastPathComponent)
+        while fs.fileExists(atPath: newFile.path) { // note that this also returns true for directories
+            newFile = newDir.appendingPathComponent("\(originalFile.lastPathComponent)-\(i)")
+            i += 1
+        }
+
+        return newFile
+    }
+
     private func moveFile(_ originalDir: Directory, _ originalFile: URL) -> URL? {
         var dirName = ""
         if originalDir.rating == .notShown {
@@ -50,20 +62,20 @@ class FileSystemStore: Store {
         if !originalDir.tags.isEmpty {
             dirName += "-" + originalDir.tags.joined(separator: "-")
         }
-
-        var newFile = root.appendingPathComponent("shown")
-        newFile = newFile.appendingPathComponent(dirName)
+        
+        var newDir = root.appendingPathComponent("shown")
+        newDir = newDir.appendingPathComponent(dirName)
 
         let fs = FileManager.default
         do {
-            try fs.createDirectory(at: newFile, withIntermediateDirectories: true, attributes: [:])
+            try fs.createDirectory(at: newDir, withIntermediateDirectories: true, attributes: [:])
         } catch let error as NSError {
             let app = NSApp.delegate as! AppDelegate
-            app.error("Couldn't create \(newFile): \(error.localizedDescription)")
+            app.error("Couldn't create \(newDir): \(error.localizedDescription)")
             return nil
         }
 
-        newFile = newFile.appendingPathComponent(originalFile.lastPathComponent)
+        let newFile = generateNewName(newDir, originalFile)
         do {
             try fs.moveItem(at: originalFile, to: newFile)
         } catch let error as NSError {
