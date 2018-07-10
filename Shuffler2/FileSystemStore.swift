@@ -21,8 +21,12 @@ class FileSystemStore: Store {
     }
     
     func randomImage() -> Key? {
-        let directories = findUpcomingDirectories()
-        // TODO: prune directories using selected tags and rating
+        var directories = findInUseDirectories()
+        if directories.isEmpty {
+            flipDirectories()
+            directories = findInUseDirectories()
+        }
+
         if let directory = randomDirectory(directories), let originalFile = randomFile(directory) {
             if let newFile = moveFile(directory, originalFile) {
                 return FileSystemKey.init(newFile)
@@ -40,18 +44,51 @@ class FileSystemStore: Store {
         return try? Data.init(contentsOf: fsKey.url)
     }
     
-    private func generateNewName(_ newDir: URL, _ originalFile: URL) -> URL {
-        var i = 2;
+    private func flipDirectories() {
+        let newDir = root.appendingPathComponent("shown")
+        let app = NSApp.delegate as! AppDelegate
+
+        // Move directories that still contain images into shown.
         let fs = FileManager.default
-        var newFile = newDir.appendingPathComponent(originalFile.lastPathComponent)
-        while fs.fileExists(atPath: newFile.path) { // note that this also returns true for directories
-            newFile = newDir.appendingPathComponent("\(originalFile.lastPathComponent)-\(i)")
-            i += 1
+        let directories = findUpcomingDirectories()
+        for dir in directories {
+            if hasImage(dir) {
+                var newUrl = newDir.appendingPathComponent(dir.url.lastPathComponent)
+                do {
+                    var index = 1
+                    while fs.fileExists(atPath: newUrl.path) {
+                        newUrl = newUrl.appendingPathComponent("\(index)")
+                        index += 1
+                    }
+                    try fs.moveItem(at: dir.url, to: newUrl)
+                    app.info("moved \(dir.url) to \(newUrl)")
+                } catch let error as NSError {
+                    app.error("couldn't move \(dir.url) to \(newUrl): \(error.localizedDescription)")
+                }
+            }
         }
 
-        return newFile
-    }
+        // Flip the shown and upcoming directories.
+        var srcDir = root.appendingPathComponent("shown")
+        var dstDir = root.appendingPathComponent("new-upcoming")
+        do {
+            try fs.moveItem(at: srcDir, to: dstDir)
+            app.info("moved \(srcDir) to \(dstDir)")
 
+            srcDir = root.appendingPathComponent("upcoming")
+            dstDir = root.appendingPathComponent("shown")
+            try fs.moveItem(at: srcDir, to: dstDir)
+            app.info("moved \(srcDir) to \(dstDir)")
+
+            srcDir = root.appendingPathComponent("new-upcoming")
+            dstDir = root.appendingPathComponent("upcoming")
+            try fs.moveItem(at: srcDir, to: dstDir)
+            app.info("moved \(srcDir) to \(dstDir)")
+        } catch let error as NSError {
+            app.error("couldn't move \(srcDir) to \(dstDir): \(error.localizedDescription)")
+        }
+    }
+    
     private func moveFile(_ originalDir: Directory, _ originalFile: URL) -> URL? {
         var dirName = ""
         if originalDir.rating == .notShown {
@@ -87,6 +124,13 @@ class FileSystemStore: Store {
         return newFile
     }
     
+    private func findInUseDirectories() -> [Directory] {
+        var directories = findUpcomingDirectories()
+        // TODO: prune directories using selected tags and rating
+        directories = directories.filter {self.hasImage($0)}
+        return directories
+    }
+    
     private func findUpcomingDirectories() -> [Directory] {
         var directories: [Directory] = []
         
@@ -111,11 +155,10 @@ class FileSystemStore: Store {
     }
     
     private func randomDirectory(_ directories: [Directory]) -> Directory? {
-        let dirs = directories.filter {self.hasImage($0)}
-        let maxWeight = dirs.reduce(0) {$0 + $1.rating.rawValue}
+        let maxWeight = directories.reduce(0) {$0 + $1.rating.rawValue}
         if maxWeight > 0 {
             var n = Int(arc4random_uniform(UInt32(maxWeight)))
-            for candidate in dirs {
+            for candidate in directories {
                 n -= candidate.rating.rawValue
                 if n <= 0 {
                     return candidate
@@ -179,6 +222,18 @@ class FileSystemStore: Store {
         }
 
         return result
+    }
+
+    private func generateNewName(_ newDir: URL, _ originalFile: URL) -> URL {
+        var i = 2;
+        let fs = FileManager.default
+        var newFile = newDir.appendingPathComponent(originalFile.lastPathComponent)
+        while fs.fileExists(atPath: newFile.path) { // note that this also returns true for directories
+            newFile = newDir.appendingPathComponent("\(originalFile.lastPathComponent)-\(i)")
+            i += 1
+        }
+        
+        return newFile
     }
     
     private func getRatingAndTags(_ dir: URL) -> (Rating, [String])? {
