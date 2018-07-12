@@ -66,11 +66,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
 
     private func notifyUser(_ text: String) {
         let notification = NSUserNotification()
-        notification.identifier = "shuffler-error2"
+        notification.identifier = "shuffler-error2" // 2 because the OS seems to get confused and stop showinng alerts if you fiddle around with prefs
         notification.title = "Shuffler2 Error"
         notification.informativeText = text
         notification.soundName = NSUserNotificationDefaultSoundName
-        notification.hasActionButton = false
+        notification.hasActionButton = false    // this will give us just a Close button
 
         let center = NSUserNotificationCenter.default
         center.delegate = self
