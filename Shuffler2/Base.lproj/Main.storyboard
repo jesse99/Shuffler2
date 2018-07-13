@@ -312,6 +312,38 @@
                                                 <action selector="previousImage:" target="Voe-Tx-rLC" id="wpA-Wu-cat"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="fUn-oR-yKy"/>
+                                        <menuItem title="Show Rating" id="945-EY-dY0">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <menu key="submenu" title="Show Rating" id="GQr-Kv-50Z">
+                                                <items>
+                                                    <menuItem title="Normal" id="VwL-ua-LxC">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                        <connections>
+                                                            <action selector="showRating:" target="Ady-hI-5gd" id="ZTc-sw-v3t"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                    <menuItem title="Good" id="Vml-ga-wMv">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                        <connections>
+                                                            <action selector="showRating:" target="Ady-hI-5gd" id="cce-zN-W7e"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                    <menuItem title="Great" id="lXM-fF-0k9">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                        <connections>
+                                                            <action selector="showRating:" target="Ady-hI-5gd" id="bHM-Mp-Giw"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                    <menuItem title="Fantastic" id="u47-0k-BzQ">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                        <connections>
+                                                            <action selector="showRating:" target="Ady-hI-5gd" id="l0E-Yy-IkB"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                </items>
+                                            </menu>
+                                        </menuItem>
                                     </items>
                                 </menu>
                             </menuItem>
@@ -358,11 +390,18 @@
                         <outlet property="delegate" destination="Voe-Tx-rLC" id="PrD-fu-P6m"/>
                     </connections>
                 </application>
-                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="Shuffler2" customModuleProvider="target"/>
+                <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="Shuffler2" customModuleProvider="target">
+                    <connections>
+                        <outlet property="fantasticItem" destination="u47-0k-BzQ" id="eRi-pJ-VU3"/>
+                        <outlet property="goodItem" destination="Vml-ga-wMv" id="HCE-Mr-Zhi"/>
+                        <outlet property="greatItem" destination="lXM-fF-0k9" id="d1N-ss-8pC"/>
+                        <outlet property="normalItem" destination="VwL-ua-LxC" id="Y91-Rd-cl0"/>
+                    </connections>
+                </customObject>
                 <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
                 <customObject id="Ady-hI-5gd" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="75" y="0.0"/>
+            <point key="canvasLocation" x="5" y="-200"/>
         </scene>
         <!--Window Controller-->
         <scene sceneID="R2V-B0-nI4">

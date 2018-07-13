@@ -16,6 +16,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         NSUserNotificationCenter.default.delegate = self
+        toggleItem(normalItem)
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
@@ -63,6 +64,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         imageView.trashImage(store)
     }
     
+    @IBAction func showRating(_ sender: Any) {
+        let item = sender as! NSMenuItem
+        if let rating = Rating.init(fromString: item.title) {
+            imageView.useRating(rating)
+            toggleItem(item)
+        } else {
+            error("unknown rating: \(item.title)")
+        }
+    }
+    
     var imageView: ImageViewController! = nil
     let store = FileSystemStore.init(picturesDir)
     
@@ -88,6 +99,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         center.delegate = self
         center.deliver(notification)
     }
+    
+    private func toggleItem(_ item: NSMenuItem) {
+        normalItem.state = .off
+        goodItem.state = .off
+        greatItem.state = .off
+        fantasticItem.state = .off
+
+        item.state = .on
+    }
+    
+    @IBOutlet weak var normalItem: NSMenuItem!
+    @IBOutlet weak var goodItem: NSMenuItem!
+    @IBOutlet weak var greatItem: NSMenuItem!
+    @IBOutlet weak var fantasticItem: NSMenuItem!
     
     private var logFile: FileHandle
 }

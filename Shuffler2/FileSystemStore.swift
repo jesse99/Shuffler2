@@ -20,11 +20,11 @@ class FileSystemStore: Store {
         self.root = URL.init(fileURLWithPath: root)
     }
     
-    func randomImage() -> Key? {
-        var directories = findInUseDirectories()
+    func randomImage(_ rating: Rating) -> Key? {
+        var directories = findInUseDirectories(rating)
         if directories.isEmpty {
             flipDirectories()
-            directories = findInUseDirectories()
+            directories = findInUseDirectories(rating)
         }
 
         if let directory = randomDirectory(directories), let originalFile = randomFile(directory) {
@@ -147,9 +147,10 @@ class FileSystemStore: Store {
         return newFile
     }
     
-    private func findInUseDirectories() -> [Directory] {
+    private func findInUseDirectories(_ rating: Rating) -> [Directory] {
         var directories = findUpcomingDirectories()
-        // TODO: prune directories using selected tags and rating
+        // TODO: prune directories using selected tags
+        directories = directories.filter {$0.rating >= rating}
         directories = directories.filter {self.hasImage($0)}
         return directories
     }

@@ -16,6 +16,10 @@ class ImageViewController: NSViewController {
         nextImage()
     }
     
+    func useRating(_ rating: Rating) {
+        self.rating = rating
+    }
+    
     func nextImage() {
         assert(currentIndex >= 0)
         assert(images.isEmpty || currentIndex <= images.count)
@@ -23,7 +27,7 @@ class ImageViewController: NSViewController {
         while true {
             if images.isEmpty || currentIndex >= images.count - 1 {
                 let app = NSApp.delegate as! AppDelegate
-                if let key = app.store.randomImage() {
+                if let key = app.store.randomImage(rating) {
                     images.append(key)
                     if images.count > 100 {     // we only allow the user to go backwards 100x
                         images.remove(at: 0)
@@ -141,5 +145,6 @@ class ImageViewController: NSViewController {
     
     private var images: [Key] = []
     private var currentIndex: Int = 0
+    private var rating = Rating.normal
 }
 
