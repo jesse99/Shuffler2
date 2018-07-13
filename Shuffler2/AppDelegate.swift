@@ -51,6 +51,18 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         imageView.previousImage()
     }
     
+    @IBAction func open(_ sender: Any) {
+        imageView.openImage(store)
+    }
+    
+    @IBAction func show(_ sender: Any) {
+        imageView.showImage(store)
+    }
+    
+    @IBAction func trash(_ sender: Any) {
+        imageView.trashImage(store)
+    }
+    
     var imageView: ImageViewController! = nil
     let store = FileSystemStore.init(picturesDir)
     

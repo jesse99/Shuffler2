@@ -44,6 +44,29 @@ class FileSystemStore: Store {
         return try? Data.init(contentsOf: fsKey.url)
     }
     
+    func openImage(_ key: Key) {
+        let fsKey = key as! FileSystemKey
+        if !NSWorkspace.shared.openFile(fsKey.url.path) {
+            NSSound.beep()
+        }
+    }
+    
+    func showImage(_ key: Key) {
+        let fsKey = key as! FileSystemKey
+        if !NSWorkspace.shared.selectFile(fsKey.url.path, inFileViewerRootedAtPath: "") {
+            NSSound.beep()
+        }
+    }
+    
+    func trashImage(_ key: Key) {
+        let fsKey = key as! FileSystemKey
+        do {
+            try FileManager.default.trashItem(at: fsKey.url, resultingItemURL: nil)
+        } catch {
+            NSSound.beep()
+        }
+    }
+    
     private func flipDirectories() {
         let newDir = root.appendingPathComponent("shown")
         let app = NSApp.delegate as! AppDelegate

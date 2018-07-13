@@ -18,7 +18,7 @@ class ImageViewController: NSViewController {
     
     func nextImage() {
         assert(currentIndex >= 0)
-        assert(images.isEmpty || currentIndex < images.count)
+        assert(images.isEmpty || currentIndex <= images.count)
         
         while true {
             if images.isEmpty || currentIndex >= images.count - 1 {
@@ -62,6 +62,36 @@ class ImageViewController: NSViewController {
         }
     }
     
+    func openImage(_ store: Store) {
+        if currentIndex >= 0 && currentIndex < images.count {
+            let app = NSApp.delegate as! AppDelegate
+            app.store.openImage(images[currentIndex])
+        } else {
+            NSSound.beep()
+        }
+    }
+    
+    func showImage(_ store: Store) {
+        if currentIndex >= 0 && currentIndex < images.count {
+            let app = NSApp.delegate as! AppDelegate
+            app.store.showImage(images[currentIndex])
+        } else {
+            NSSound.beep()
+        }
+    }
+    
+    func trashImage(_ store: Store) {
+        if currentIndex >= 0 && currentIndex < images.count {
+            let app = NSApp.delegate as! AppDelegate
+            app.store.trashImage(images[currentIndex])
+            
+            images.remove(at: currentIndex)
+            nextImage()
+        } else {
+            NSSound.beep()
+        }
+    }
+    
     // This can return false if the user has deleted or moved the image.
     private func selectCurrent() -> Bool {
         let key = images[currentIndex]
@@ -77,7 +107,7 @@ class ImageViewController: NSViewController {
     
     private func setImage(_ data: Data, scaling: CGFloat, align: NSImageAlignment) -> Bool {
         if let rep = NSBitmapImageRep.init(data: data) {
-            var imageSize = rep.size
+            var imageSize = NSSize.init(width: rep.pixelsWide, height: rep.pixelsHigh)
             let windowSize = view.window!.frame.size
             let maxScaling = min(windowSize.width/imageSize.width, windowSize.height/imageSize.height)
 //            print("windowSize = \(windowSize)")

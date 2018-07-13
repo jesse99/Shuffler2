@@ -66,10 +66,10 @@
 				3705576A20EB20F600C38971 /* FileSystemStore.swift */,
 				375E567620E948E10044020C /* ImageViewController.swift */,
 				3705576620E966B700C38971 /* ImageWindow.swift */,
-				375E567A20E948E20044020C /* Main.storyboard */,
 				3705576820EB20E900C38971 /* Store.swift */,
 				375E567820E948E20044020C /* Assets.xcassets */,
 				375E567D20E948E20044020C /* Info.plist */,
+				375E567A20E948E20044020C /* Main.storyboard */,
 				375E567E20E948E20044020C /* Shuffler2.entitlements */,
 			);
 			path = Shuffler2;

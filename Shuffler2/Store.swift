@@ -53,4 +53,8 @@ protocol Store {
     func randomImage() -> Key?
     
     func loadImage(_ key: Key) -> Data?
+
+    func openImage(_ key: Key)
+    func showImage(_ key: Key)
+    func trashImage(_ key: Key)
 }
