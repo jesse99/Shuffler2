@@ -51,10 +51,17 @@ protocol Key: CustomStringConvertible {
 /// Interface used to access images.
 protocol Store {
     func randomImage(_ rating: Rating) -> Key?
-    
     func loadImage(_ key: Key) -> Data?
 
     func openImage(_ key: Key)
     func showImage(_ key: Key)
     func trashImage(_ key: Key)
+    
+    // Unsorted list of tags.
+    func availableTags() -> [String]
+    
+    // If any tags are set then only images that match all of those tags are used.
+    var showTags: [String] {get set}
+
+    var includeNotShown: Bool {get set}
 }

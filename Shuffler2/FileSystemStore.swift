@@ -34,7 +34,6 @@ class FileSystemStore: Store {
                 return FileSystemKey.init(originalFile) // not ideal but shouldn't actually cause a problem
             }
         } else {
-            // TODO: flip the directories (but only if randomDirectory failed)
             return nil
         }
     }
@@ -67,6 +66,14 @@ class FileSystemStore: Store {
         }
     }
     
+    func availableTags() -> [String] {
+        return allTags
+    }
+    
+    public var showTags: [String] = []
+    
+    public var includeNotShown: Bool = true
+
     private func flipDirectories() {
         let newDir = root.appendingPathComponent("shown")
         let app = NSApp.delegate as! AppDelegate
@@ -144,14 +151,27 @@ class FileSystemStore: Store {
     
     private func findInUseDirectories(_ rating: Rating) -> [Directory] {
         var directories = findUpcomingDirectories()
-        // TODO: prune directories using selected tags
         directories = directories.filter {$0.rating >= rating}
+        directories = directories.filter {self.tagsMatch($0)}
         directories = directories.filter {self.hasImage($0)}
         return directories
     }
     
+    private func tagsMatch(_ dir: Directory) -> Bool {
+        if includeNotShown && dir.rating == .notShown {
+            return true
+        }
+        for required in showTags {
+            if !dir.tags.contains(required) {
+                return false
+            }
+        }
+        return true
+    }
+    
     private func findUpcomingDirectories() -> [Directory] {
         var directories: [Directory] = []
+        allTags.removeAll()
         
         let upcoming = root.appendingPathComponent("upcoming")
         let app = NSApp.delegate as! AppDelegate
@@ -162,7 +182,7 @@ class FileSystemStore: Store {
             for case let dir as URL in enumerator {
                 if dir.hasDirectoryPath {
                     if let (rating, tags) = getRatingAndTags(dir) {
-                        // TODO: think what we want to do is update an allTags var
+                        addTags(tags)
                         directories.append(Directory(url: dir, rating: rating, tags: tags))
                     } else {
                         app.error("directory \(dir) has an invalid rating")
@@ -172,6 +192,14 @@ class FileSystemStore: Store {
         }
         
         return directories
+    }
+    
+    private func addTags(_ tags: [String]) {
+        for tag in tags {
+            if !allTags.contains(tag) {
+                allTags.append(tag)
+            }
+        }
     }
     
     private func randomDirectory(_ directories: [Directory]) -> Directory? {
@@ -311,4 +339,5 @@ class FileSystemStore: Store {
     }
     
     private let root: URL
+    private var allTags: [String] = []
 }

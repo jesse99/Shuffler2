@@ -344,6 +344,20 @@
                                                 </items>
                                             </menu>
                                         </menuItem>
+                                        <menuItem title="Show Tags" id="cKS-Yn-9jp">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <menu key="submenu" title="Show Tags" id="n8W-UL-zNa">
+                                                <items>
+                                                    <menuItem isSeparatorItem="YES" id="JO2-hK-tcA"/>
+                                                    <menuItem title="Not Shown" state="on" id="C4x-Kk-BEq">
+                                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                                        <connections>
+                                                            <action selector="toggleIncludeNotShown:" target="Voe-Tx-rLC" id="5rW-Fm-MaN"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                </items>
+                                            </menu>
+                                        </menuItem>
                                     </items>
                                 </menu>
                             </menuItem>
@@ -396,6 +410,8 @@
                         <outlet property="goodItem" destination="Vml-ga-wMv" id="HCE-Mr-Zhi"/>
                         <outlet property="greatItem" destination="lXM-fF-0k9" id="d1N-ss-8pC"/>
                         <outlet property="normalItem" destination="VwL-ua-LxC" id="Y91-Rd-cl0"/>
+                        <outlet property="notShownItem" destination="C4x-Kk-BEq" id="afb-vf-JEi"/>
+                        <outlet property="showTagsMenu" destination="n8W-UL-zNa" id="uz0-VS-LzZ"/>
                     </connections>
                 </customObject>
                 <customObject id="YLy-65-1bz" customClass="NSFontManager"/>

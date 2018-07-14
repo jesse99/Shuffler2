@@ -17,6 +17,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         NSUserNotificationCenter.default.delegate = self
         toggleItem(normalItem)
+
+        let newTags = store.availableTags()
+        addNewTags(newTags)
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
@@ -46,6 +49,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     // window so it's not really part of the responder chain.
     @IBAction func nextImage(_ sender: Any) {
         imageView.nextImage()
+        
+        let newTags = store.availableTags()
+        removeMissingTags(newTags)
+        addNewTags(newTags)
     }
     
     @IBAction func previousImage(_ sender: Any) {
@@ -74,8 +81,34 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         }
     }
     
+    @objc func toggleTag(_ sender: Any) {
+        let item = sender as! NSMenuItem
+        toggleShown(item.title.lowercased())
+    }
+    
+    @IBAction func toggleIncludeNotShown(_ sender: Any) {
+        if store.includeNotShown {
+            store.includeNotShown = false
+            notShownItem.state = .off
+
+        } else {
+            store.includeNotShown = true
+            notShownItem.state = .on
+        }
+    }
+    
     var imageView: ImageViewController! = nil
     let store = FileSystemStore.init(picturesDir)
+    
+    private func toggleShown(_ tag: String) {
+        if let index = store.showTags.index(of: tag) {
+            store.showTags.remove(at: index)
+            checkShown(tag, false)
+        } else {
+            store.showTags.append(tag)
+            checkShown(tag, true)
+        }
+    }
     
     private func logLine(_ text: String) {
         print(text)
@@ -109,10 +142,58 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         item.state = .on
     }
     
+    private func removeMissingTags(_ newTags: [String]) {
+        var deadpool: [NSMenuItem] = []
+        
+        for item in showTagsMenu.items {
+            if item.isSeparatorItem {
+                break
+            }
+            if !newTags.contains(item.title.lowercased()) {
+                deadpool.append(item)
+            }
+        }
+        
+        for item in deadpool {
+            showTagsMenu.removeItem(item)
+        }
+    }
+    
+    private func addNewTags(_ newTags: [String]) {
+        let sortedTags = newTags.sorted()
+        for tag in sortedTags {
+            insertTag(tag)
+        }
+    }
+    
+    private func insertTag(_ tag: String) {
+        for (index, item) in showTagsMenu.items.enumerated() {
+            if item.title.lowercased() == tag {
+                break
+            } else if item.isSeparatorItem || item.title >= tag {
+                let title = tag.capitalized
+                showTagsMenu.insertItem(withTitle: title, action: #selector(toggleTag(_:)), keyEquivalent: "", at: index)
+                break
+            }
+        }
+    }
+    
+    private func checkShown(_ tag: String, _ on: Bool) {
+        for item in showTagsMenu.items {
+            if item.title.lowercased() == tag {
+                item.state = on ? .on : .off
+                return
+            }
+        }
+        assert(false)
+    }
+    
     @IBOutlet weak var normalItem: NSMenuItem!
     @IBOutlet weak var goodItem: NSMenuItem!
     @IBOutlet weak var greatItem: NSMenuItem!
     @IBOutlet weak var fantasticItem: NSMenuItem!
+    @IBOutlet weak var showTagsMenu: NSMenu!
+    @IBOutlet weak var notShownItem: NSMenuItem!
     
     private var logFile: FileHandle
 }
