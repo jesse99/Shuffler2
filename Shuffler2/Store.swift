@@ -44,6 +44,45 @@ public enum Rating: Int, Comparable, CustomStringConvertible {
     }
 }
 
+public class Tags: CustomStringConvertible {
+    init() {
+        self.tags = []
+    }
+    
+    public func removeAll() {
+        tags.removeAll()
+    }
+    
+    public func contains(_ tag: String) -> Bool {
+        return tags.contains(tag.lowercased())
+    }
+    
+    public func add(_ tag: String) {
+        tags.append(tag.lowercased())
+    }
+    
+    public func remove(_ tag: String) -> Bool {
+        if let index = tags.index(of: tag.lowercased()) {
+            tags.remove(at: index)
+            return true
+        }
+        return false
+    }
+    
+    // Returns the tags as lower case strings in no particular order.
+    public private(set) var tags: [String]
+
+    // Sorted user friendly names.
+    public func titles() -> [String] {
+        let titles = tags.map {$0.capitalized}
+        return titles.sorted()
+    }
+    
+    public var description: String {
+        get {return tags.joined(separator: ", ")}
+    }
+}
+
 /// Used by stores to identify an image.
 protocol Key: CustomStringConvertible {
 }
@@ -58,10 +97,10 @@ protocol Store {
     func trashImage(_ key: Key)
     
     // Unsorted list of tags.
-    func availableTags() -> [String]
+    func availableTags() -> Tags
     
     // If any tags are set then only images that match all of those tags are used.
-    var showTags: [String] {get set}
+    var showTags: Tags {get set}
 
     var includeNotShown: Bool {get set}
 }

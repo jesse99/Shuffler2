@@ -83,7 +83,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     
     @objc func toggleTag(_ sender: Any) {
         let item = sender as! NSMenuItem
-        toggleShown(item.title.lowercased())
+        toggleShown(item.title)
     }
     
     @IBAction func toggleIncludeNotShown(_ sender: Any) {
@@ -100,13 +100,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     var imageView: ImageViewController! = nil
     let store = FileSystemStore.init(picturesDir)
     
-    private func toggleShown(_ tag: String) {
-        if let index = store.showTags.index(of: tag) {
-            store.showTags.remove(at: index)
-            checkShown(tag, false)
+    private func toggleShown(_ title: String) {
+        if store.showTags.remove(title) {
+            checkShown(title, false)
         } else {
-            store.showTags.append(tag)
-            checkShown(tag, true)
+            store.showTags.add(title)
+            checkShown(title, true)
         }
     }
     
@@ -142,14 +141,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         item.state = .on
     }
     
-    private func removeMissingTags(_ newTags: [String]) {
+    private func removeMissingTags(_ newTags: Tags) {
         var deadpool: [NSMenuItem] = []
         
         for item in showTagsMenu.items {
             if item.isSeparatorItem {
                 break
             }
-            if !newTags.contains(item.title.lowercased()) {
+            if !newTags.contains(item.title) {
                 deadpool.append(item)
             }
         }
@@ -159,28 +158,27 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         }
     }
     
-    private func addNewTags(_ newTags: [String]) {
-        let sortedTags = newTags.sorted()
-        for tag in sortedTags {
-            insertTag(tag)
+    private func addNewTags(_ newTags: Tags) {
+        let titles = newTags.titles()
+        for title in titles {
+            insertTag(title)
         }
     }
     
-    private func insertTag(_ tag: String) {
+    private func insertTag(_ title: String) {
         for (index, item) in showTagsMenu.items.enumerated() {
-            if item.title.lowercased() == tag {
+            if item.title == title {
                 break
-            } else if item.isSeparatorItem || item.title >= tag {
-                let title = tag.capitalized
+            } else if item.isSeparatorItem || item.title >= title {
                 showTagsMenu.insertItem(withTitle: title, action: #selector(toggleTag(_:)), keyEquivalent: "", at: index)
                 break
             }
         }
     }
     
-    private func checkShown(_ tag: String, _ on: Bool) {
+    private func checkShown(_ title: String, _ on: Bool) {
         for item in showTagsMenu.items {
-            if item.title.lowercased() == tag {
+            if item.title == title {
                 item.state = on ? .on : .off
                 return
             }

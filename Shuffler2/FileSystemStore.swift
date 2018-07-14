@@ -66,11 +66,11 @@ class FileSystemStore: Store {
         }
     }
     
-    func availableTags() -> [String] {
+    func availableTags() -> Tags {
         return allTags
     }
     
-    public var showTags: [String] = []
+    public var showTags = Tags.init()
     
     public var includeNotShown: Bool = true
 
@@ -161,7 +161,7 @@ class FileSystemStore: Store {
         if includeNotShown && dir.rating == .notShown {
             return true
         }
-        for required in showTags {
+        for required in showTags.tags {
             if !dir.tags.contains(required) {
                 return false
             }
@@ -197,7 +197,7 @@ class FileSystemStore: Store {
     private func addTags(_ tags: [String]) {
         for tag in tags {
             if !allTags.contains(tag) {
-                allTags.append(tag)
+                allTags.add(tag)
             }
         }
     }
@@ -339,5 +339,5 @@ class FileSystemStore: Store {
     }
     
     private let root: URL
-    private var allTags: [String] = []
+    private var allTags = Tags.init()
 }
