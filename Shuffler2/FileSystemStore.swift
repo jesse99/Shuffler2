@@ -113,12 +113,7 @@ class FileSystemStore: Store {
     }
     
     private func moveFile(_ originalDir: Directory, _ originalFile: URL) -> URL? {
-        var dirName = ""
-        if originalDir.rating == .notShown {
-            dirName += "normal"
-        } else {
-            dirName += originalDir.rating.description
-        }
+        var dirName = originalDir.rating.description
         if !originalDir.tags.isEmpty {
             dirName += "-" + originalDir.tags.joined(separator: "-")
         }
@@ -167,6 +162,7 @@ class FileSystemStore: Store {
             for case let dir as URL in enumerator {
                 if dir.hasDirectoryPath {
                     if let (rating, tags) = getRatingAndTags(dir) {
+                        // TODO: think what we want to do is update an allTags var
                         directories.append(Directory(url: dir, rating: rating, tags: tags))
                     } else {
                         app.error("directory \(dir) has an invalid rating")
