@@ -98,6 +98,12 @@ protocol Store {
 
     func getRating(_ key: Key) -> Rating?
     func setRating(_ key: Key, _ rating: Rating)
+
+    // 0 => no scaling
+    // -1 => max scaling
+    // else scale by value/100.0
+    func getScaling(_ key: Key) -> Int
+    func setScaling(_ key: Key, _ scaling: Int)
     
     // Unsorted list of tags.
     func availableTags() -> Tags

@@ -16,11 +16,17 @@ class ImageViewController: NSViewController {
         nextImage()
     }
     
-    func useRating(_ rating: Rating) {
+    public func useRating(_ rating: Rating) {
         self.rating = rating
     }
     
-    func nextImage() {
+    public private(set) var currentScaling: CGFloat = 1.0
+
+    public func refresh() {
+        _ = selectCurrent()
+    }
+    
+    public func nextImage() {
         assert(currentIndex >= 0)
         assert(images.isEmpty || currentIndex <= images.count)
         
@@ -50,7 +56,7 @@ class ImageViewController: NSViewController {
         }
     }
     
-    func previousImage() {
+    public func previousImage() {
         while true {
             if currentIndex > 0 {
                 currentIndex -= 1
@@ -66,7 +72,7 @@ class ImageViewController: NSViewController {
         }
     }
     
-    func openImage(_ store: Store) {
+    public func openImage(_ store: Store) {
         if currentIndex >= 0 && currentIndex < images.count {
             let app = NSApp.delegate as! AppDelegate
             app.store.openImage(images[currentIndex])
@@ -75,7 +81,7 @@ class ImageViewController: NSViewController {
         }
     }
     
-    func showImage(_ store: Store) {
+    public func showImage(_ store: Store) {
         if currentIndex >= 0 && currentIndex < images.count {
             let app = NSApp.delegate as! AppDelegate
             app.store.showImage(images[currentIndex])
@@ -84,7 +90,7 @@ class ImageViewController: NSViewController {
         }
     }
     
-    func trashImage(_ store: Store) {
+    public func trashImage(_ store: Store) {
         if currentIndex >= 0 && currentIndex < images.count {
             let app = NSApp.delegate as! AppDelegate
             app.store.trashImage(images[currentIndex])
@@ -101,12 +107,23 @@ class ImageViewController: NSViewController {
         let key = images[currentIndex]
         let app = NSApp.delegate as! AppDelegate
         if let data = app.store.loadImage(key) {
-            _ = setImage(data, scaling: 1.0, align: .alignCenter)
+            _ = setImage(data, scaling: getScaling(), align: .alignCenter)
             app.settingsView.update(app.store, key)
             return true
         } else {
             print("failed to load \(key)")
             return false
+        }
+    }
+    
+    private func getScaling() -> CGFloat {
+        let key = images[currentIndex]
+        let app = NSApp.delegate as! AppDelegate
+        let scaling = app.store.getScaling(key)
+        switch scaling {
+        case 0: return 1.0
+        case -1: return 1000.0
+        default: return CGFloat(scaling)/100.0
         }
     }
     
@@ -119,9 +136,9 @@ class ImageViewController: NSViewController {
 //            print("   maxScaling = \(maxScaling)")
 //            print("   imageSize = \(imageSize)")
             
-            let imageScaling = min(scaling, maxScaling)
-            imageSize.width *= imageScaling
-            imageSize.height *= imageScaling
+            currentScaling = min(scaling, maxScaling)
+            imageSize.width *= currentScaling
+            imageSize.height *= currentScaling
             rep.size = imageSize
 //            print("   imageSize = \(imageSize)")
 

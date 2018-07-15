@@ -13,6 +13,50 @@ class FileSystemKey: Key {
         self.url = url
     }
     
+    public func getInt(_ name: String) -> Int? {
+        if let text = getString(name) {
+            return Int(text)
+        } else {
+            return nil
+        }
+    }
+    
+    public func setInt(_ name: String, _ value: Int) {
+        let text = "\(value)"
+        setString(name, text)
+    }
+    
+    // These can be viewed using the command line like so:
+    // xattr -p scaling <path to file>
+    public func getString(_ name: String) -> String? {
+        let bytes = getxattr(url.path, name, nil, 0, 0, 0)
+        if bytes > 0 {
+            let buffer = UnsafeMutableRawPointer.allocate(byteCount: bytes, alignment: MemoryLayout<Int8>.alignment)
+            defer {
+                buffer.deallocate()
+            }
+            _ = getxattr(url.path, name, buffer, bytes, 0, 0)
+
+            let data = Data(bytes: buffer, count: bytes)
+//            print("loading \(data as NSData)")
+            return String.init(data: data, encoding: .utf8)
+        }
+        return nil
+    }
+    
+    public func setString(_ name: String, _ value: String) {
+        if let data = value.data(using: .utf8) {
+//            print("saving \(data as NSData)")
+            data.withUnsafeBytes {(ptr: UnsafePointer<UInt8>) -> Void in
+                let buffer = UnsafeRawPointer(ptr)
+                let result = setxattr(url.path, name, buffer, data.count, 0, 0)
+                if result < 0 {
+                    print("failed to set \(name) to \(value)")
+                }
+            }
+        }
+    }
+    
     public var description: String {get {return url.path}}
     
     fileprivate var url: URL
@@ -92,6 +136,16 @@ class FileSystemStore: Store {
         if let newUrl = moveFileTo(dirName, fsKey.url) {
             fsKey.updateUrl(newUrl)
         }
+    }
+    
+    func getScaling(_ key: Key) -> Int {
+        let fsKey = key as! FileSystemKey
+        return fsKey.getInt("scaling") ?? 0
+    }
+    
+    func setScaling(_ key: Key, _ scaling: Int) {
+        let fsKey = key as! FileSystemKey
+        fsKey.setInt("scaling", scaling)
     }
     
     func availableTags() -> Tags {

@@ -23,22 +23,58 @@ class SettingsViewController: NSViewController {
         } else {
             ratingsPopup.selectItem(at: 0)
         }
+        
+        let scaling = store.getScaling(key)
+        for item in scalingPopup.itemArray {
+            if item.tag == scaling {
+                scalingPopup.select(item)
+                
+                let app = NSApp.delegate as! AppDelegate
+                if scaling == -1 {
+                    let amount = Int(app.imageView.currentScaling*100.0)
+                    scalingPopup.itemArray.last?.title = "Max (\(amount)%)"
+                } else {
+                    scalingPopup.itemArray.last?.title = "Max"
+                }
+                break
+            }
+        }
     }
     
     @IBAction func noScaling(_ sender: Any) {
+        if let key = currentKey {
+            let app = NSApp.delegate as! AppDelegate
+            app.store.setScaling(key, 0)
+            app.imageView.refresh()
+        }
     }
     
     @IBAction func maxScaling(_ sender: Any) {
+        if let key = currentKey {
+            let app = NSApp.delegate as! AppDelegate
+            app.store.setScaling(key, -1)
+            app.imageView.refresh()
+        }
     }
     
     @IBAction func scaleUsing(_ sender: Any) {
+        let item = sender as! NSMenuItem
+        if let key = currentKey {
+            let app = NSApp.delegate as! AppDelegate
+            app.store.setScaling(key, item.tag)
+            app.imageView.refresh()
+        }
     }
     
     @IBAction func setRating(_ sender: Any) {
         let item = sender as! NSMenuItem
-        if let rating = Rating.init(fromString: item.title), let key = currentKey {
+        if let key = currentKey {
             let app = NSApp.delegate as! AppDelegate
-            app.store.setRating(key, rating)
+            if let rating = Rating.init(fromString: item.title) {
+                app.store.setRating(key, rating)
+            } else {
+                update(app.store, key)
+            }
         }
     }
     
