@@ -12,6 +12,7 @@ class SettingsViewController: NSViewController {
     
     public func update(_ store: Store, _ key: Key) {
         currentKey = key
+        view.window?.title = store.getName(key)
         if let rating = store.getRating(key) {
             switch rating {
             case .notShown: ratingsPopup.selectItem(at: 0)

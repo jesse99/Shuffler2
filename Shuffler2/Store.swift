@@ -102,6 +102,8 @@ protocol Store {
     func showImage(_ key: Key)
     func trashImage(_ key: Key)
 
+    func getName(_ key: Key) -> String
+
     func getRating(_ key: Key) -> Rating?
     func setRating(_ key: Key, _ rating: Rating)
 

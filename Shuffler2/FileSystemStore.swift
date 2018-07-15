@@ -126,6 +126,11 @@ class FileSystemStore: Store {
         }
     }
     
+    func getName(_ key: Key) -> String {
+        let fsKey = key as! FileSystemKey
+        return fsKey.url.deletingPathExtension().lastPathComponent
+    }
+    
     func getRating(_ key: Key) -> Rating? {
         let fsKey = key as! FileSystemKey
         let dir = fsKey.url.deletingLastPathComponent()
