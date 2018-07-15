@@ -2,7 +2,8 @@
 //  Copyright © 2018 MushinApps. All rights reserved.
 import Cocoa
 
-let picturesDir = "/Users/jessejones/Source/Shuffler2/pictures"
+//let picturesDir = "/Users/jessejones/Source/Shuffler2/pictures"
+let picturesDir = "/Users/jessejones/Documents/Desktop Pictures"
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDelegate {

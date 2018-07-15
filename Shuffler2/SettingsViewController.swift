@@ -61,6 +61,7 @@ class SettingsViewController: NSViewController {
         if let key = currentKey {
             let app = NSApp.delegate as! AppDelegate
             app.store.setScaling(key, 0)
+            addNoneTag()
             app.imageView.refresh()
         }
     }
@@ -69,6 +70,7 @@ class SettingsViewController: NSViewController {
         if let key = currentKey {
             let app = NSApp.delegate as! AppDelegate
             app.store.setScaling(key, -1)
+            addNoneTag()
             app.imageView.refresh()
         }
     }
@@ -78,6 +80,7 @@ class SettingsViewController: NSViewController {
         if let key = currentKey {
             let app = NSApp.delegate as! AppDelegate
             app.store.setScaling(key, item.tag)
+            addNoneTag()
             app.imageView.refresh()
         }
     }
@@ -88,6 +91,7 @@ class SettingsViewController: NSViewController {
             let app = NSApp.delegate as! AppDelegate
             if let rating = Rating.init(fromString: item.title) {
                 app.store.setRating(key, rating)
+                addNoneTag()
             } else {
                 update(app.store, key)
             }
@@ -100,6 +104,9 @@ class SettingsViewController: NSViewController {
             if let tag = getString(title: "New Tag", defaultValue: ""), tag != "" {
                 app.store.addTag(key, tag)
                 tagsPopup.selectItem(at: -1)
+                if tag != "None" {
+                    removeNoneTag()
+                }
                 update(app.store, key)
             }
         }
@@ -116,6 +123,32 @@ class SettingsViewController: NSViewController {
                 update(app.store, key)
             } else {
                 app.store.addTag(key, item.title)
+                tagsPopup.selectItem(at: -1)
+                update(app.store, key)
+            }
+
+            if item.title != "None" {
+                removeNoneTag()
+            }
+        }
+    }
+    
+    private func addNoneTag() {
+        if let key = currentKey {
+            let app = NSApp.delegate as! AppDelegate
+            if app.store.getTags(key).tags.isEmpty {
+                app.store.addTag(key, "None")
+                tagsPopup.selectItem(at: -1)
+                update(app.store, key)
+            }
+        }
+    }
+    
+    private func removeNoneTag() {
+        if let key = currentKey {
+            let app = NSApp.delegate as! AppDelegate
+            if app.store.getTags(key).contains("None") {
+                app.store.removeTag(key, "None")
                 tagsPopup.selectItem(at: -1)
                 update(app.store, key)
             }

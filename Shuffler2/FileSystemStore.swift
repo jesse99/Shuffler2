@@ -320,7 +320,6 @@ class FileSystemStore: Store {
         allTags.removeAll()
         
         let upcoming = root.appendingPathComponent("upcoming")
-        let app = NSApp.delegate as! AppDelegate
         
         let fs = FileManager.default
         let options: FileManager.DirectoryEnumerationOptions = [.skipsPackageDescendants, .skipsHiddenFiles, .skipsSubdirectoryDescendants]
@@ -330,8 +329,6 @@ class FileSystemStore: Store {
                     if let (rating, tags) = getRatingAndTags(dir) {
                         addTags(tags)
                         directories.append(Directory(url: dir, rating: rating, tags: tags))
-                    } else {
-                        app.error("directory \(dir) has an invalid rating")
                     }
                 }
             }
