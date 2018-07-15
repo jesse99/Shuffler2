@@ -163,6 +163,17 @@ class FileSystemStore: Store {
         fsKey.setInt("scaling", scaling)
     }
     
+    func getAlignment(_ key: Key) -> NSImageAlignment {
+        let fsKey = key as! FileSystemKey
+        let value = fsKey.getInt("alignment") ?? 0
+        return NSImageAlignment.init(rawValue: UInt(value)) ?? .alignCenter
+    }
+    
+    func setAlignment(_ key: Key, _ align: NSImageAlignment) {
+        let fsKey = key as! FileSystemKey
+        fsKey.setInt("alignment", Int(align.rawValue))
+    }
+    
     func getTags(_ key: Key) -> Tags {
         let fsKey = key as! FileSystemKey
         let dir = fsKey.url.deletingLastPathComponent()

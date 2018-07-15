@@ -475,8 +475,8 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="TNW-8D-lWD">
-                                <rect key="frame" x="102" y="69" width="236" height="26"/>
+                            <popUpButton verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="TNW-8D-lWD">
+                                <rect key="frame" x="102" y="69" width="191" height="26"/>
                                 <popUpButtonCell key="cell" type="push" title="None" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="jiI-Zz-NkK" id="e0U-cY-8sZ">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
@@ -530,7 +530,7 @@
                                 </textFieldCell>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="SDy-vP-9zZ">
-                                <rect key="frame" x="102" y="30" width="185" height="30"/>
+                                <rect key="frame" x="102" y="30" width="190" height="30"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="blah blah" id="NES-GR-yL7">
                                     <font key="font" size="24" name="Helvetica"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -538,9 +538,9 @@
                                 </textFieldCell>
                             </textField>
                             <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="MxU-3A-TfO">
-                                <rect key="frame" x="303" y="32" width="35" height="26"/>
+                                <rect key="frame" x="308" y="32" width="30" height="26"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="30" id="l8d-1P-zIa"/>
+                                    <constraint firstAttribute="width" constant="25" id="l8d-1P-zIa"/>
                                 </constraints>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="pqE-mW-r55" id="2HS-Uw-d9N">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -558,21 +558,58 @@
                                     </menu>
                                 </popUpButtonCell>
                             </popUpButton>
+                            <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7H9-CK-JRz">
+                                <rect key="frame" x="308" y="69" width="30" height="26"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="25" id="O0x-dL-Ag7"/>
+                                </constraints>
+                                <popUpButtonCell key="cell" type="push" title="Center" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="TXA-xJ-51i" id="Hof-0m-sqj">
+                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="menu"/>
+                                    <menu key="menu" id="SDh-bs-tAf">
+                                        <items>
+                                            <menuItem title="Center" state="on" id="TXA-xJ-51i">
+                                                <connections>
+                                                    <action selector="alignCenter:" target="kUj-yh-cFb" id="9bW-yB-4Go"/>
+                                                </connections>
+                                            </menuItem>
+                                            <menuItem title="Top" id="h90-5g-dfh">
+                                                <modifierMask key="keyEquivalentModifierMask"/>
+                                                <connections>
+                                                    <action selector="alignTop:" target="kUj-yh-cFb" id="0Au-1H-EKT"/>
+                                                </connections>
+                                            </menuItem>
+                                            <menuItem title="Left" id="L9o-Wj-Dw8">
+                                                <connections>
+                                                    <action selector="alignLeft:" target="kUj-yh-cFb" id="bYq-2c-gPh"/>
+                                                </connections>
+                                            </menuItem>
+                                            <menuItem title="Right" id="GL0-77-Q9N">
+                                                <connections>
+                                                    <action selector="alignRight:" target="kUj-yh-cFb" id="Jf1-ld-dGQ"/>
+                                                </connections>
+                                            </menuItem>
+                                        </items>
+                                    </menu>
+                                </popUpButtonCell>
+                            </popUpButton>
                         </subviews>
                         <constraints>
                             <constraint firstItem="SDy-vP-9zZ" firstAttribute="leading" secondItem="TNW-8D-lWD" secondAttribute="leading" id="2yL-XZ-lg8"/>
                             <constraint firstItem="ULl-2M-WYS" firstAttribute="leading" secondItem="8Fs-2L-pqK" secondAttribute="leading" id="3jf-Zk-tSn"/>
                             <constraint firstItem="MxU-3A-TfO" firstAttribute="leading" secondItem="SDy-vP-9zZ" secondAttribute="trailing" constant="20" id="4ve-Yj-Ggm"/>
+                            <constraint firstAttribute="trailing" secondItem="7H9-CK-JRz" secondAttribute="trailing" constant="20" id="4yC-Rt-4k2"/>
                             <constraint firstItem="ULl-2M-WYS" firstAttribute="top" secondItem="8Fs-2L-pqK" secondAttribute="bottom" constant="15" id="FKG-0r-f1G"/>
                             <constraint firstAttribute="trailing" secondItem="MxU-3A-TfO" secondAttribute="trailing" constant="20" id="GSF-Py-ZiM"/>
                             <constraint firstItem="cnE-8g-95C" firstAttribute="centerY" secondItem="8Fs-2L-pqK" secondAttribute="centerY" id="LBo-ym-bgH"/>
                             <constraint firstItem="TNW-8D-lWD" firstAttribute="leading" secondItem="cnE-8g-95C" secondAttribute="leading" id="NTg-ac-vhe"/>
                             <constraint firstItem="TNW-8D-lWD" firstAttribute="centerY" secondItem="ULl-2M-WYS" secondAttribute="centerY" id="P62-pQ-sLf"/>
+                            <constraint firstItem="7H9-CK-JRz" firstAttribute="leading" secondItem="TNW-8D-lWD" secondAttribute="trailing" constant="20" id="Qut-2y-T68"/>
                             <constraint firstItem="mcg-qi-vep" firstAttribute="top" secondItem="ULl-2M-WYS" secondAttribute="bottom" constant="15" id="VBC-r8-AEw"/>
                             <constraint firstItem="8Fs-2L-pqK" firstAttribute="top" secondItem="Nx3-Fv-wFA" secondAttribute="top" constant="20" id="XFJ-Tf-pOi"/>
-                            <constraint firstAttribute="trailing" secondItem="TNW-8D-lWD" secondAttribute="trailing" constant="20" id="YLt-pu-cKy"/>
                             <constraint firstItem="8Fs-2L-pqK" firstAttribute="leading" secondItem="Nx3-Fv-wFA" secondAttribute="leading" constant="20" id="ZjH-zR-OTS"/>
                             <constraint firstItem="mcg-qi-vep" firstAttribute="leading" secondItem="ULl-2M-WYS" secondAttribute="leading" id="aHU-dk-93J"/>
+                            <constraint firstItem="7H9-CK-JRz" firstAttribute="centerY" secondItem="TNW-8D-lWD" secondAttribute="centerY" id="cmk-kQ-qD7"/>
                             <constraint firstItem="TNW-8D-lWD" firstAttribute="leading" secondItem="ULl-2M-WYS" secondAttribute="trailing" constant="20" id="dp1-kl-6MY"/>
                             <constraint firstItem="SDy-vP-9zZ" firstAttribute="centerY" secondItem="mcg-qi-vep" secondAttribute="centerY" id="dvf-XV-bIH"/>
                             <constraint firstItem="ULl-2M-WYS" firstAttribute="trailing" secondItem="8Fs-2L-pqK" secondAttribute="trailing" id="i9d-jn-ZeE"/>
@@ -582,6 +619,8 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="alignMenu" destination="SDh-bs-tAf" id="3od-qV-B1t"/>
+                        <outlet property="alignTop" destination="h90-5g-dfh" id="yXz-s8-ijm"/>
                         <outlet property="ratingsPopup" destination="cnE-8g-95C" id="TCR-Z4-nNY"/>
                         <outlet property="scalingPopup" destination="TNW-8D-lWD" id="Ege-Fp-ejo"/>
                         <outlet property="tagsLabel" destination="SDy-vP-9zZ" id="JSg-l4-1pV"/>

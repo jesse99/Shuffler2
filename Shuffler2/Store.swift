@@ -1,6 +1,7 @@
 //  Created by Jesse Jones on 7/2/18.
 //  Copyright © 2018 MushinApps. All rights reserved.
 import Foundation
+import Cocoa
 
 /// Values are used to weight pictures so that they are shown more often.
 public enum Rating: Int, Comparable, CustomStringConvertible {
@@ -116,6 +117,9 @@ protocol Store {
     // else scale by value/100.0
     func getScaling(_ key: Key) -> Int
     func setScaling(_ key: Key, _ scaling: Int)
+    
+    func getAlignment(_ key: Key) -> NSImageAlignment
+    func setAlignment(_ key: Key, _ align: NSImageAlignment)
     
     // Unsorted list of tags.
     func availableTags() -> Tags

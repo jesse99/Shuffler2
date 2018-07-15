@@ -41,6 +41,18 @@ class SettingsViewController: NSViewController {
             }
         }
         
+        let align = store.getAlignment(key)
+        for item in alignMenu.items {
+            switch align {
+            case .alignCenter: item.state = item.title == "Center" ? .on : .off
+            case .alignTop: item.state = item.title == "Top" ? .on : .off
+            case .alignBottom: item.state = item.title == "Bottom" ? .on : .off
+            case .alignRight: item.state = item.title == "Right" ? .on : .off
+            case .alignLeft: item.state = item.title == "Left" ? .on : .off
+            default: item.state = .off
+            }
+        }
+        
         for title in store.availableTags().titles() {
             insertTag(title)
         }
@@ -54,6 +66,31 @@ class SettingsViewController: NSViewController {
                 break
             }
             item.state = tags.contains(item.title) ? .on : .off
+        }
+    }
+
+    @IBAction func alignCenter(_ sender: Any) {
+        setAlignment(.alignCenter)
+    }
+
+    @IBAction func alignTop(_ sender: Any) {
+        setAlignment(.alignTop)
+    }
+
+    @IBAction func alignLeft(_ sender: Any) {
+        setAlignment(.alignLeft)
+    }
+    
+    @IBAction func alignRight(_ sender: Any) {
+        setAlignment(.alignRight)
+    }
+    
+    private func setAlignment(_ align: NSImageAlignment) {
+        if let key = currentKey {
+            let app = NSApp.delegate as! AppDelegate
+            app.store.setAlignment(key, align)
+            addNoneTag()
+            app.imageView.refresh()
         }
     }
     
@@ -170,6 +207,7 @@ class SettingsViewController: NSViewController {
     @IBOutlet var scalingPopup: NSPopUpButton!
     @IBOutlet var tagsPopup: NSPopUpButton!
     @IBOutlet var tagsLabel: NSTextField!
+    @IBOutlet var alignMenu: NSMenu!
     
     private var currentKey: Key? = nil
 }

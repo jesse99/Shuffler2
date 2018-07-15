@@ -115,7 +115,7 @@ class ImageViewController: NSViewController {
         let key = images[currentIndex]
         let app = NSApp.delegate as! AppDelegate
         if let data = app.store.loadImage(key) {
-            _ = setImage(data, scaling: getScaling(), align: .alignCenter)
+            _ = setImage(data, scaling: getScaling(), align: getAlignment())
             app.settingsView.update(app.store, key)
             return true
         } else {
@@ -133,6 +133,12 @@ class ImageViewController: NSViewController {
         case -1: return 1000.0
         default: return CGFloat(scaling)/100.0
         }
+    }
+    
+    private func getAlignment() -> NSImageAlignment {
+        let key = images[currentIndex]
+        let app = NSApp.delegate as! AppDelegate
+        return app.store.getAlignment(key)
     }
     
     private func setImage(_ data: Data, scaling: CGFloat, align: NSImageAlignment) -> Bool {
