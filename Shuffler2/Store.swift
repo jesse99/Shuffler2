@@ -95,6 +95,9 @@ protocol Store {
     func openImage(_ key: Key)
     func showImage(_ key: Key)
     func trashImage(_ key: Key)
+
+    func getRating(_ key: Key) -> Rating?
+    func setRating(_ key: Key, _ rating: Rating)
     
     // Unsorted list of tags.
     func availableTags() -> Tags

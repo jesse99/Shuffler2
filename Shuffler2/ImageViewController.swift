@@ -11,7 +11,7 @@ class ImageViewController: NSViewController {
         app.imageView = self
     }
     
-    override func viewWillAppear() {
+    public func startedUp() {
         setupWindow()
         nextImage()
     }
@@ -102,6 +102,7 @@ class ImageViewController: NSViewController {
         let app = NSApp.delegate as! AppDelegate
         if let data = app.store.loadImage(key) {
             _ = setImage(data, scaling: 1.0, align: .alignCenter)
+            app.settingsView.update(app.store, key)
             return true
         } else {
             print("failed to load \(key)")

@@ -24,12 +24,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         settingsWindow = NSStoryboard.main?.instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(rawValue: "SettingsWindowID")) as! NSWindowController
         settingsWindow.windowFrameAutosaveName = NSWindow.FrameAutosaveName(rawValue: "settings-window")
         settingsWindow.showWindow(self)
-        
+
         timer = Timer.scheduledTimer(withTimeInterval: 60.0, repeats: true, block: self.onTimer)
         checkInterval(60.0)
+        
+        imageView.startedUp()
     }
     
-    private var settingsWindow: NSWindowController!
+    public var settingsView: SettingsViewController!
     
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
@@ -260,5 +262,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     
     private var logFile: FileHandle
     private var timer: Timer!
+    private var settingsWindow: NSWindowController!
 }
 

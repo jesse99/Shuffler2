@@ -4,14 +4,25 @@ import Cocoa
 import AppKit
 
 class SettingsViewController: NSViewController {
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-//        let app = NSApp.delegate as! AppDelegate
-//        app.imageView = self
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        let app = NSApp.delegate as! AppDelegate
+        app.settingsView = self
     }
     
-    override func viewWillAppear() {
+    public func update(_ store: Store, _ key: Key) {
+        currentKey = key
+        if let rating = store.getRating(key) {
+            switch rating {
+            case .notShown: ratingsPopup.selectItem(at: 0)
+            case .normal: ratingsPopup.selectItem(at: 1)
+            case .good: ratingsPopup.selectItem(at: 2)
+            case .great: ratingsPopup.selectItem(at: 3)
+            case .fantastic: ratingsPopup.selectItem(at: 4)
+            }
+        } else {
+            ratingsPopup.selectItem(at: 0)
+        }
     }
     
     @IBAction func noScaling(_ sender: Any) {
@@ -24,6 +35,11 @@ class SettingsViewController: NSViewController {
     }
     
     @IBAction func setRating(_ sender: Any) {
+        let item = sender as! NSMenuItem
+        if let rating = Rating.init(fromString: item.title), let key = currentKey {
+            let app = NSApp.delegate as! AppDelegate
+            app.store.setRating(key, rating)
+        }
     }
     
     @IBAction func newTag(_ sender: Any) {
@@ -33,5 +49,7 @@ class SettingsViewController: NSViewController {
     @IBOutlet var scalingPopup: NSPopUpButton!
     @IBOutlet var tagsPopup: NSPopUpButton!
     @IBOutlet var tagsLabel: NSTextField!
+    
+    private var currentKey: Key? = nil
 }
 

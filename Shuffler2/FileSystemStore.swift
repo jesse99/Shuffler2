@@ -4,8 +4,12 @@ import Foundation
 import Cocoa
 
 // Concrete store class based on a file system URL.
-struct FileSystemKey: Key {
+class FileSystemKey: Key {
     fileprivate init(_ url: URL) {
+        self.url = url
+    }
+    
+    public func updateUrl(_ url: URL) {
         self.url = url
     }
     
@@ -63,6 +67,30 @@ class FileSystemStore: Store {
             try FileManager.default.trashItem(at: fsKey.url, resultingItemURL: nil)
         } catch {
             NSSound.beep()
+        }
+    }
+    
+    func getRating(_ key: Key) -> Rating? {
+        let fsKey = key as! FileSystemKey
+        let dir = fsKey.url.deletingLastPathComponent()
+        if let (rating, _) = getRatingAndTags(dir) {
+            return rating
+        }
+        return nil
+    }
+    
+    func setRating(_ key: Key, _ rating: Rating) {
+        let fsKey = key as! FileSystemKey
+        let dir = fsKey.url.deletingLastPathComponent()
+
+        var dirName = rating.description
+        if let (_, tags) = getRatingAndTags(dir) {
+            if !tags.isEmpty {
+                dirName += "-" + tags.joined(separator: "-")
+            }
+        }
+        if let newUrl = moveFileTo(dirName, fsKey.url) {
+            fsKey.updateUrl(newUrl)
         }
     }
     
@@ -125,6 +153,10 @@ class FileSystemStore: Store {
             dirName += "-" + originalDir.tags.joined(separator: "-")
         }
         
+        return moveFileTo(dirName, originalFile)
+    }
+    
+    private func moveFileTo(_ dirName: String, _ originalFile: URL) -> URL? {
         var newDir = root.appendingPathComponent("shown")
         newDir = newDir.appendingPathComponent(dirName)
 
@@ -273,7 +305,7 @@ class FileSystemStore: Store {
     }
 
     private func generateNewName(_ newDir: URL, _ originalFile: URL) -> URL {
-        var i = 2;
+        var i = 2
         let fs = FileManager.default
         var newFile = newDir.appendingPathComponent(originalFile.lastPathComponent)
         while fs.fileExists(atPath: newFile.path) { // note that this also returns true for directories

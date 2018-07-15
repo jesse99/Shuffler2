@@ -579,15 +579,21 @@
                             </textField>
                             <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="cnE-8g-95C">
                                 <rect key="frame" x="102" y="119" width="236" height="26"/>
-                                <popUpButtonCell key="cell" type="push" title="Normal" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="cKZ-Pi-TxS" id="2Vo-h1-nST">
+                                <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="cKZ-Pi-TxS" id="2Vo-h1-nST">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
                                     <menu key="menu" id="XGa-9K-9kR">
                                         <items>
-                                            <menuItem title="Normal" id="cKZ-Pi-TxS">
+                                            <menuItem enabled="NO" id="cKZ-Pi-TxS">
                                                 <modifierMask key="keyEquivalentModifierMask"/>
                                                 <connections>
                                                     <action selector="setRating:" target="kUj-yh-cFb" id="yml-w8-jZh"/>
+                                                </connections>
+                                            </menuItem>
+                                            <menuItem title="Normal" id="57D-DD-7U8">
+                                                <modifierMask key="keyEquivalentModifierMask"/>
+                                                <connections>
+                                                    <action selector="setRating:" target="kUj-yh-cFb" id="ZMU-75-DOF"/>
                                                 </connections>
                                             </menuItem>
                                             <menuItem title="Good" id="b7l-1V-UrH">
