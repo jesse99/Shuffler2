@@ -12,8 +12,16 @@ class ImageViewController: NSViewController {
     }
     
     public func startedUp() {
-        setupWindow()
+        setupWindow(1)
         nextImage()
+    }
+    
+    public func setupWindow(_ screenIndex: Int) {
+        let screen = NSScreen.screens[screenIndex]
+        
+        // Not sure why but couldn't get positioning to work in the ImageWindow.init method.
+        let window = view.window
+        window!.setFrame(screen.visibleFrame, display: true)
     }
     
     public func useRating(_ rating: Rating) {
@@ -149,14 +157,6 @@ class ImageViewController: NSViewController {
             return true
         }
         return false
-    }
-    
-    private func setupWindow() {
-        let screen = NSScreen.screens[2]
-
-        // Not sure why but couldn't get positioning to work in the ImageWindow.init method.
-        let window = view.window
-        window!.setFrame(screen.visibleFrame, display: true)
     }
     
     @IBOutlet private var imageView: NSImageView!

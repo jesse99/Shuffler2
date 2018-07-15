@@ -80,6 +80,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         imageView.trashImage(store)
     }
     
+    @IBAction func useScreen(_ sender: Any) {
+        let item = sender as! NSMenuItem
+        imageView.setupWindow(item.tag)
+    }
+    
     @IBAction func setInterval(_ sender: Any) {
         let item = sender as! NSMenuItem
         let secs = TimeInterval(item.tag)
