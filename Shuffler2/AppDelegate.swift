@@ -20,8 +20,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
 
         let newTags = store.availableTags()
         addNewTags(newTags)
+        
+        timer = Timer.scheduledTimer(withTimeInterval: 60.0, repeats: true, block: self.onTimer)
+        checkInterval(60.0)
     }
-
+    
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
     }
@@ -48,15 +51,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     // It'd be nicer to put these on the ImageViewController but that's a background sort of
     // window so it's not really part of the responder chain.
     @IBAction func nextImage(_ sender: Any) {
-        imageView.nextImage()
-        
-        let newTags = store.availableTags()
-        removeMissingTags(newTags)
-        addNewTags(newTags)
+        doNextImage()
+        reschedule()
     }
     
     @IBAction func previousImage(_ sender: Any) {
         imageView.previousImage()
+        reschedule()
     }
     
     @IBAction func open(_ sender: Any) {
@@ -69,6 +70,20 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     
     @IBAction func trash(_ sender: Any) {
         imageView.trashImage(store)
+    }
+    
+    @IBAction func setInterval(_ sender: Any) {
+        let item = sender as! NSMenuItem
+        let secs = TimeInterval(item.tag)
+        checkInterval(secs)
+        
+        timer.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: secs, repeats: true, block: self.onTimer)
+    }
+    
+    @IBAction func setIntervalToNever(_ sender: Any) {
+        checkInterval(TimeInterval.infinity)
+        timer.invalidate()
     }
     
     @IBAction func showRating(_ sender: Any) {
@@ -99,6 +114,26 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     
     var imageView: ImageViewController! = nil
     let store = FileSystemStore.init(picturesDir)
+    
+    private func reschedule() {
+        if timer.isValid {
+            let interval = timer.timeInterval
+            timer.invalidate()
+            timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true, block: self.onTimer)
+        }
+    }
+    
+    private func onTimer(_ timer: Timer) {
+        doNextImage()
+    }
+    
+    private func doNextImage() {
+        imageView.nextImage()
+        
+        let newTags = store.availableTags()
+        removeMissingTags(newTags)
+        addNewTags(newTags)
+    }
     
     private func toggleShown(_ title: String) {
         if store.showTags.remove(title) {
@@ -186,13 +221,38 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         assert(false)
     }
     
+    private func uncheckIntervals() {
+        neverIntervalItem.state = .off
+        for item in intervalMenu.items {
+            item.state = .off
+        }
+    }
+    
+    private func checkInterval(_ secs: TimeInterval) {
+        uncheckIntervals()
+        
+        if secs == TimeInterval.infinity {
+            neverIntervalItem.state = .on
+        } else {
+            for item in intervalMenu.items {
+                if item.tag == Int(secs) {
+                    item.state = .on
+                    break
+                }
+            }
+        }
+    }
+    
     @IBOutlet weak var normalItem: NSMenuItem!
     @IBOutlet weak var goodItem: NSMenuItem!
     @IBOutlet weak var greatItem: NSMenuItem!
     @IBOutlet weak var fantasticItem: NSMenuItem!
     @IBOutlet weak var showTagsMenu: NSMenu!
     @IBOutlet weak var notShownItem: NSMenuItem!
+    @IBOutlet weak var intervalMenu: NSMenu!
+    @IBOutlet weak var neverIntervalItem: NSMenuItem!
     
     private var logFile: FileHandle
+    private var timer: Timer!
 }
 
