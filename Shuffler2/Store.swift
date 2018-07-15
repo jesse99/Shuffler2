@@ -48,6 +48,10 @@ public class Tags: CustomStringConvertible {
     init() {
         self.tags = []
     }
+
+    init(from: [String]) {
+        self.tags = from
+    }
     
     public func removeAll() {
         tags.removeAll()
@@ -58,7 +62,9 @@ public class Tags: CustomStringConvertible {
     }
     
     public func add(_ tag: String) {
-        tags.append(tag.lowercased())
+        if !contains(tag) {
+            tags.append(tag.lowercased())
+        }
     }
     
     public func remove(_ tag: String) -> Bool {
@@ -98,6 +104,9 @@ protocol Store {
 
     func getRating(_ key: Key) -> Rating?
     func setRating(_ key: Key, _ rating: Rating)
+
+    func getTags(_ key: Key) -> Tags
+    func addTag(_ key: Key, _ tag: String)
 
     // 0 => no scaling
     // -1 => max scaling

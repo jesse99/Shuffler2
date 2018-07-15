@@ -3,6 +3,18 @@
 import Foundation
 import Cocoa
 
+extension Tags {
+    func makeName(_ rating: Rating) -> String {
+        var dirName = rating.description
+        
+        let tags = self.tags.sorted()
+        if !tags.isEmpty {
+            dirName += "-" + tags.joined(separator: "-")
+        }
+        return dirName
+    }
+}
+
 // Concrete store class based on a file system URL.
 class FileSystemKey: Key {
     fileprivate init(_ url: URL) {
@@ -129,9 +141,7 @@ class FileSystemStore: Store {
 
         var dirName = rating.description
         if let (_, tags) = getRatingAndTags(dir) {
-            if !tags.isEmpty {
-                dirName += "-" + tags.joined(separator: "-")
-            }
+            dirName = tags.makeName(rating)
         }
         if let newUrl = moveFileTo(dirName, fsKey.url) {
             fsKey.updateUrl(newUrl)
@@ -146,6 +156,36 @@ class FileSystemStore: Store {
     func setScaling(_ key: Key, _ scaling: Int) {
         let fsKey = key as! FileSystemKey
         fsKey.setInt("scaling", scaling)
+    }
+    
+    func getTags(_ key: Key) -> Tags {
+        let fsKey = key as! FileSystemKey
+        let dir = fsKey.url.deletingLastPathComponent()
+
+        if let (_, tags) = getRatingAndTags(dir) {
+            return tags
+        }
+        return Tags.init()
+    }
+    
+    func addTag(_ key: Key, _ inTag: String) {
+        let fsKey = key as! FileSystemKey
+        let dir = fsKey.url.deletingLastPathComponent()
+        
+        var (rating, tags) = getRatingAndTags(dir) ?? (Rating.normal, Tags.init())
+        if rating == .notShown {
+            rating = .normal
+        }
+        
+        let tag = inTag.trimmingCharacters(in: .whitespaces)
+        if tag != "" && !tags.contains(tag) {
+            tags.add(tag)
+
+            let dirName = tags.makeName(rating)
+            if let newUrl = moveFileTo(dirName, fsKey.url) {
+                fsKey.updateUrl(newUrl)
+            }
+        }
     }
     
     func availableTags() -> Tags {
@@ -202,11 +242,7 @@ class FileSystemStore: Store {
     }
     
     private func moveFile(_ originalDir: Directory, _ originalFile: URL) -> URL? {
-        var dirName = originalDir.rating.description
-        if !originalDir.tags.isEmpty {
-            dirName += "-" + originalDir.tags.joined(separator: "-")
-        }
-        
+        let dirName = originalDir.tags.makeName(originalDir.rating)
         return moveFileTo(dirName, originalFile)
     }
     
@@ -280,8 +316,8 @@ class FileSystemStore: Store {
         return directories
     }
     
-    private func addTags(_ tags: [String]) {
-        for tag in tags {
+    private func addTags(_ tags: Tags) {
+        for tag in tags.tags {
             if !allTags.contains(tag) {
                 allTags.add(tag)
             }
@@ -370,15 +406,15 @@ class FileSystemStore: Store {
         return newFile
     }
     
-    private func getRatingAndTags(_ dir: URL) -> (Rating, [String])? {
+    private func getRatingAndTags(_ dir: URL) -> (Rating, Tags)? {
         let name = dir.lastPathComponent
         if name == "not-shown" {
-            return (Rating.init(fromString: name)!, tags: [])
+            return (Rating.init(fromString: name)!, tags: Tags.init())
         } else {
             var tags = name.components(separatedBy: "-")
             if let rating = Rating.init(fromString: tags[0]) {
                 tags.remove(at: 0)
-                return (rating, tags)
+                return (rating, Tags.init(from: tags))
             }
         }
         return nil
@@ -417,7 +453,7 @@ class FileSystemStore: Store {
     private struct Directory: CustomStringConvertible {
         let url: URL
         let rating: Rating
-        let tags: [String]  // TODO: make this a type?
+        let tags: Tags
         
         var description: String {
             return url.description

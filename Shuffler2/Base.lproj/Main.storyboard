@@ -580,12 +580,12 @@
                             </textField>
                             <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="cnE-8g-95C">
                                 <rect key="frame" x="102" y="105" width="236" height="26"/>
-                                <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="cKZ-Pi-TxS" id="2Vo-h1-nST">
+                                <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="cKZ-Pi-TxS" id="2Vo-h1-nST">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
                                     <menu key="menu" id="XGa-9K-9kR">
                                         <items>
-                                            <menuItem enabled="NO" id="cKZ-Pi-TxS">
+                                            <menuItem state="on" enabled="NO" id="cKZ-Pi-TxS">
                                                 <modifierMask key="keyEquivalentModifierMask"/>
                                                 <connections>
                                                     <action selector="setRating:" target="kUj-yh-cFb" id="yml-w8-jZh"/>
@@ -695,13 +695,14 @@
                                 <constraints>
                                     <constraint firstAttribute="width" constant="35" id="l8d-1P-zIa"/>
                                 </constraints>
-                                <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="pqE-mW-r55" id="2HS-Uw-d9N">
+                                <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="pqE-mW-r55" id="2HS-Uw-d9N">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
                                     <menu key="menu" id="I3P-Zw-MmV">
                                         <items>
-                                            <menuItem isSeparatorItem="YES" id="pqE-mW-r55"/>
-                                            <menuItem title="New…" state="on" id="MB2-tv-MVm">
+                                            <menuItem isSeparatorItem="YES" state="on" id="pqE-mW-r55"/>
+                                            <menuItem title="New…" id="MB2-tv-MVm">
+                                                <modifierMask key="keyEquivalentModifierMask"/>
                                                 <connections>
                                                     <action selector="newTag:" target="kUj-yh-cFb" id="HdS-zd-vgQ"/>
                                                 </connections>

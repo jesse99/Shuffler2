@@ -24,12 +24,12 @@ class SettingsViewController: NSViewController {
             ratingsPopup.selectItem(at: 0)
         }
         
+        let app = NSApp.delegate as! AppDelegate
         let scaling = store.getScaling(key)
         for item in scalingPopup.itemArray {
             if item.tag == scaling {
                 scalingPopup.select(item)
                 
-                let app = NSApp.delegate as! AppDelegate
                 if scaling == -1 {
                     let amount = Int(app.imageView.currentScaling*100.0)
                     scalingPopup.itemArray.last?.title = "Max (\(amount)%)"
@@ -39,6 +39,10 @@ class SettingsViewController: NSViewController {
                 break
             }
         }
+        
+        let tags = app.store.getTags(key)
+        let text = tags.titles().joined(separator: " • ")
+        tagsLabel.stringValue = text
     }
     
     @IBAction func noScaling(_ sender: Any) {
@@ -79,6 +83,14 @@ class SettingsViewController: NSViewController {
     }
     
     @IBAction func newTag(_ sender: Any) {
+        if let key = currentKey {
+            let app = NSApp.delegate as! AppDelegate
+            if let tag = getString(title: "New Tag", defaultValue: ""), tag != "" {
+                app.store.addTag(key, tag)
+                tagsPopup.selectItem(at: -1)
+                update(app.store, key)
+            }
+        }
     }
     
     @IBOutlet var ratingsPopup: NSPopUpButton!
