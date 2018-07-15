@@ -10,6 +10,7 @@
 		3705576720E966B700C38971 /* ImageWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3705576620E966B700C38971 /* ImageWindow.swift */; };
 		3705576920EB20E900C38971 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3705576820EB20E900C38971 /* Store.swift */; };
 		3705576B20EB20F600C38971 /* FileSystemStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3705576A20EB20F600C38971 /* FileSystemStore.swift */; };
+		372F55DA20FAD1BD009F59B6 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 372F55D920FAD1BD009F59B6 /* SettingsViewController.swift */; };
 		375E567520E948E10044020C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 375E567420E948E10044020C /* AppDelegate.swift */; };
 		375E567720E948E10044020C /* ImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 375E567620E948E10044020C /* ImageViewController.swift */; };
 		375E567920E948E20044020C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 375E567820E948E20044020C /* Assets.xcassets */; };
@@ -21,6 +22,7 @@
 		3705576620E966B700C38971 /* ImageWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageWindow.swift; sourceTree = "<group>"; };
 		3705576820EB20E900C38971 /* Store.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
 		3705576A20EB20F600C38971 /* FileSystemStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSystemStore.swift; sourceTree = "<group>"; };
+		372F55D920FAD1BD009F59B6 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		375E567120E948E10044020C /* Shuffler2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Shuffler2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		375E567420E948E10044020C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		375E567620E948E10044020C /* ImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewController.swift; sourceTree = "<group>"; };
@@ -66,6 +68,7 @@
 				3705576A20EB20F600C38971 /* FileSystemStore.swift */,
 				375E567620E948E10044020C /* ImageViewController.swift */,
 				3705576620E966B700C38971 /* ImageWindow.swift */,
+				372F55D920FAD1BD009F59B6 /* SettingsViewController.swift */,
 				3705576820EB20E900C38971 /* Store.swift */,
 				375E567820E948E20044020C /* Assets.xcassets */,
 				375E567D20E948E20044020C /* Info.plist */,
@@ -156,6 +159,7 @@
 				375E567720E948E10044020C /* ImageViewController.swift in Sources */,
 				375E567520E948E10044020C /* AppDelegate.swift in Sources */,
 				3705576920EB20E900C38971 /* Store.swift in Sources */,
+				372F55DA20FAD1BD009F59B6 /* SettingsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

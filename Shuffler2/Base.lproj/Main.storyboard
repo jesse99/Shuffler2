@@ -490,10 +490,10 @@
             </objects>
             <point key="canvasLocation" x="5" y="-200"/>
         </scene>
-        <!--Window Controller-->
+        <!--Image WIndow-->
         <scene sceneID="R2V-B0-nI4">
             <objects>
-                <windowController id="B8D-0N-5wS" sceneMemberID="viewController">
+                <windowController id="B8D-0N-5wS" userLabel="Image WIndow" sceneMemberID="viewController">
                     <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" hasShadow="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" animationBehavior="default" id="IQv-IB-iLA" customClass="ImageWindow" customModule="Shuffler2" customModuleProvider="target">
                         <windowStyleMask key="styleMask" fullSizeContentView="YES"/>
                         <windowCollectionBehavior key="collectionBehavior" canJoinAllSpaces="YES" stationary="YES" ignoresCycle="YES"/>
@@ -539,6 +539,203 @@
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="75" y="655"/>
+        </scene>
+        <!--Settings Window-->
+        <scene sceneID="DLY-Xj-K3i">
+            <objects>
+                <windowController storyboardIdentifier="SettingsWindowID" showSeguePresentationStyle="single" id="sbb-1X-NUW" userLabel="Settings Window" sceneMemberID="viewController">
+                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hasShadow="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="mqp-xj-CXo">
+                        <windowStyleMask key="styleMask" titled="YES" miniaturizable="YES" resizable="YES"/>
+                        <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+                        <rect key="contentRect" x="425" y="526" width="480" height="270"/>
+                        <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1577"/>
+                        <connections>
+                            <outlet property="delegate" destination="sbb-1X-NUW" id="KYd-do-SUH"/>
+                        </connections>
+                    </window>
+                    <connections>
+                        <segue destination="kUj-yh-cFb" kind="relationship" relationship="window.shadowedContentViewController" id="bJ4-l1-CmJ"/>
+                    </connections>
+                </windowController>
+                <customObject id="S4g-Cv-NdO" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-361" y="1147"/>
+        </scene>
+        <!--Settings View-->
+        <scene sceneID="2lo-tm-p0A">
+            <objects>
+                <viewController identifier="SettingsViewID" storyboardIdentifier="SettingsViewID" id="kUj-yh-cFb" userLabel="Settings View" customClass="SettingsViewController" customModule="Shuffler2" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="Nx3-Fv-wFA">
+                        <rect key="frame" x="0.0" y="0.0" width="355" height="164"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <subviews>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="8Fs-2L-pqK">
+                                <rect key="frame" x="18" y="122" width="68" height="22"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Rating:" id="TjX-hw-k1C">
+                                    <font key="font" metaFont="system" size="18"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="cnE-8g-95C">
+                                <rect key="frame" x="102" y="119" width="236" height="26"/>
+                                <popUpButtonCell key="cell" type="push" title="Normal" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="cKZ-Pi-TxS" id="2Vo-h1-nST">
+                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="menu"/>
+                                    <menu key="menu" id="XGa-9K-9kR">
+                                        <items>
+                                            <menuItem title="Normal" id="cKZ-Pi-TxS">
+                                                <modifierMask key="keyEquivalentModifierMask"/>
+                                                <connections>
+                                                    <action selector="setRating:" target="kUj-yh-cFb" id="yml-w8-jZh"/>
+                                                </connections>
+                                            </menuItem>
+                                            <menuItem title="Good" id="b7l-1V-UrH">
+                                                <modifierMask key="keyEquivalentModifierMask"/>
+                                                <connections>
+                                                    <action selector="setRating:" target="kUj-yh-cFb" id="M2B-nb-3oF"/>
+                                                </connections>
+                                            </menuItem>
+                                            <menuItem title="Great" id="B1A-c7-Xb6">
+                                                <modifierMask key="keyEquivalentModifierMask"/>
+                                                <connections>
+                                                    <action selector="setRating:" target="kUj-yh-cFb" id="h3f-Pd-6Mb"/>
+                                                </connections>
+                                            </menuItem>
+                                            <menuItem title="Fantastic" id="0tb-M3-TJR">
+                                                <modifierMask key="keyEquivalentModifierMask"/>
+                                                <connections>
+                                                    <action selector="setRating:" target="kUj-yh-cFb" id="M5M-wK-GAO"/>
+                                                </connections>
+                                            </menuItem>
+                                        </items>
+                                    </menu>
+                                </popUpButtonCell>
+                                <accessibility identifier="Rating Menu"/>
+                            </popUpButton>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ULl-2M-WYS">
+                                <rect key="frame" x="18" y="75" width="68" height="22"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Scaling:" id="lNR-nX-SEj">
+                                    <font key="font" metaFont="system" size="18"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="TNW-8D-lWD">
+                                <rect key="frame" x="102" y="73" width="236" height="26"/>
+                                <popUpButtonCell key="cell" type="push" title="None" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="jiI-Zz-NkK" id="e0U-cY-8sZ">
+                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="menu"/>
+                                    <menu key="menu" id="bjA-ar-EeC">
+                                        <items>
+                                            <menuItem title="None" state="on" id="jiI-Zz-NkK">
+                                                <connections>
+                                                    <action selector="noScaling:" target="kUj-yh-cFb" id="Myz-D4-ghG"/>
+                                                </connections>
+                                            </menuItem>
+                                            <menuItem title="125%" tag="125" id="86i-Hq-ieo">
+                                                <connections>
+                                                    <action selector="scaleUsing:" target="kUj-yh-cFb" id="ndj-Dy-WOR"/>
+                                                </connections>
+                                            </menuItem>
+                                            <menuItem title="150%" tag="150" id="8wl-hM-biZ">
+                                                <connections>
+                                                    <action selector="scaleUsing:" target="kUj-yh-cFb" id="htB-Dv-lu3"/>
+                                                </connections>
+                                            </menuItem>
+                                            <menuItem title="175%" tag="175" id="gol-m8-EXq">
+                                                <connections>
+                                                    <action selector="scaleUsing:" target="kUj-yh-cFb" id="Qdd-i5-P9H"/>
+                                                </connections>
+                                            </menuItem>
+                                            <menuItem title="200%" tag="200" id="un0-Gn-9NK">
+                                                <connections>
+                                                    <action selector="scaleUsing:" target="kUj-yh-cFb" id="t1U-c7-PpG"/>
+                                                </connections>
+                                            </menuItem>
+                                            <menuItem title="400%" tag="400" id="KRw-7p-bD0">
+                                                <connections>
+                                                    <action selector="scaleUsing:" target="kUj-yh-cFb" id="q7H-bJ-qQn"/>
+                                                </connections>
+                                            </menuItem>
+                                            <menuItem title="Max" tag="-1" id="ARi-hL-m4f">
+                                                <connections>
+                                                    <action selector="maxScaling:" target="kUj-yh-cFb" id="H9g-su-0zw"/>
+                                                </connections>
+                                            </menuItem>
+                                        </items>
+                                    </menu>
+                                </popUpButtonCell>
+                            </popUpButton>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="mcg-qi-vep">
+                                <rect key="frame" x="18" y="23" width="68" height="22"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Tags:" id="xWb-fh-UkM">
+                                    <font key="font" metaFont="system" size="18"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="SDy-vP-9zZ">
+                                <rect key="frame" x="102" y="19" width="180" height="30"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="blah blah" id="NES-GR-yL7">
+                                    <font key="font" size="24" name="Helvetica"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="MxU-3A-TfO">
+                                <rect key="frame" x="298" y="21" width="40" height="26"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="35" id="l8d-1P-zIa"/>
+                                </constraints>
+                                <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="pqE-mW-r55" id="2HS-Uw-d9N">
+                                    <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="menu"/>
+                                    <menu key="menu" id="I3P-Zw-MmV">
+                                        <items>
+                                            <menuItem isSeparatorItem="YES" id="pqE-mW-r55"/>
+                                            <menuItem title="New…" state="on" id="MB2-tv-MVm">
+                                                <connections>
+                                                    <action selector="newTag:" target="kUj-yh-cFb" id="HdS-zd-vgQ"/>
+                                                </connections>
+                                            </menuItem>
+                                        </items>
+                                    </menu>
+                                </popUpButtonCell>
+                            </popUpButton>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="SDy-vP-9zZ" firstAttribute="leading" secondItem="TNW-8D-lWD" secondAttribute="leading" id="2yL-XZ-lg8"/>
+                            <constraint firstItem="ULl-2M-WYS" firstAttribute="leading" secondItem="8Fs-2L-pqK" secondAttribute="leading" id="3jf-Zk-tSn"/>
+                            <constraint firstItem="MxU-3A-TfO" firstAttribute="leading" secondItem="SDy-vP-9zZ" secondAttribute="trailing" constant="20" id="4ve-Yj-Ggm"/>
+                            <constraint firstItem="ULl-2M-WYS" firstAttribute="top" secondItem="8Fs-2L-pqK" secondAttribute="bottom" constant="25" id="FKG-0r-f1G"/>
+                            <constraint firstAttribute="trailing" secondItem="MxU-3A-TfO" secondAttribute="trailing" constant="20" id="GSF-Py-ZiM"/>
+                            <constraint firstItem="cnE-8g-95C" firstAttribute="centerY" secondItem="8Fs-2L-pqK" secondAttribute="centerY" id="LBo-ym-bgH"/>
+                            <constraint firstItem="TNW-8D-lWD" firstAttribute="leading" secondItem="cnE-8g-95C" secondAttribute="leading" id="NTg-ac-vhe"/>
+                            <constraint firstItem="TNW-8D-lWD" firstAttribute="centerY" secondItem="ULl-2M-WYS" secondAttribute="centerY" id="P62-pQ-sLf"/>
+                            <constraint firstItem="mcg-qi-vep" firstAttribute="top" secondItem="ULl-2M-WYS" secondAttribute="bottom" constant="30" id="VBC-r8-AEw"/>
+                            <constraint firstItem="8Fs-2L-pqK" firstAttribute="top" secondItem="Nx3-Fv-wFA" secondAttribute="top" constant="20" id="XFJ-Tf-pOi"/>
+                            <constraint firstAttribute="trailing" secondItem="TNW-8D-lWD" secondAttribute="trailing" constant="20" id="YLt-pu-cKy"/>
+                            <constraint firstItem="8Fs-2L-pqK" firstAttribute="leading" secondItem="Nx3-Fv-wFA" secondAttribute="leading" constant="20" id="ZjH-zR-OTS"/>
+                            <constraint firstItem="mcg-qi-vep" firstAttribute="leading" secondItem="ULl-2M-WYS" secondAttribute="leading" id="aHU-dk-93J"/>
+                            <constraint firstItem="TNW-8D-lWD" firstAttribute="leading" secondItem="ULl-2M-WYS" secondAttribute="trailing" constant="20" id="dp1-kl-6MY"/>
+                            <constraint firstItem="SDy-vP-9zZ" firstAttribute="centerY" secondItem="mcg-qi-vep" secondAttribute="centerY" id="dvf-XV-bIH"/>
+                            <constraint firstItem="ULl-2M-WYS" firstAttribute="trailing" secondItem="8Fs-2L-pqK" secondAttribute="trailing" id="i9d-jn-ZeE"/>
+                            <constraint firstItem="mcg-qi-vep" firstAttribute="trailing" secondItem="ULl-2M-WYS" secondAttribute="trailing" id="naH-lG-yau"/>
+                            <constraint firstAttribute="trailing" secondItem="cnE-8g-95C" secondAttribute="trailing" constant="20" id="uAT-sL-YiD"/>
+                            <constraint firstItem="MxU-3A-TfO" firstAttribute="centerY" secondItem="mcg-qi-vep" secondAttribute="centerY" id="uBb-Zt-qYo"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="ratingsPopup" destination="cnE-8g-95C" id="TCR-Z4-nNY"/>
+                        <outlet property="scalingPopup" destination="TNW-8D-lWD" id="Ege-Fp-ejo"/>
+                        <outlet property="tagsLabel" destination="SDy-vP-9zZ" id="JSg-l4-1pV"/>
+                        <outlet property="tagsPopup" destination="MxU-3A-TfO" id="WY8-JQ-uTF"/>
+                    </connections>
+                </viewController>
+                <customObject id="KJt-Q2-dX9" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="242.5" y="1085"/>
         </scene>
     </scenes>
     <resources>
