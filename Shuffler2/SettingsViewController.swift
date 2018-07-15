@@ -41,9 +41,20 @@ class SettingsViewController: NSViewController {
             }
         }
         
+        for title in store.availableTags().titles() {
+            insertTag(title)
+        }
+        
         let tags = app.store.getTags(key)
         let text = tags.titles().joined(separator: " • ")
         tagsLabel.stringValue = text
+
+        for item in tagsPopup.menu!.items {
+            if item.isSeparatorItem {
+                break
+            }
+            item.state = tags.contains(item.title) ? .on : .off
+        }
     }
     
     @IBAction func noScaling(_ sender: Any) {
@@ -90,6 +101,34 @@ class SettingsViewController: NSViewController {
                 app.store.addTag(key, tag)
                 tagsPopup.selectItem(at: -1)
                 update(app.store, key)
+            }
+        }
+    }
+    
+    @objc func toggleTag(_ sender: Any) {
+        if let key = currentKey {
+            let app = NSApp.delegate as! AppDelegate
+            let item = sender as! NSMenuItem
+
+            if app.store.getTags(key).contains(item.title) {
+                app.store.removeTag(key, item.title)
+                tagsPopup.selectItem(at: -1)
+                update(app.store, key)
+            } else {
+                app.store.addTag(key, item.title)
+                tagsPopup.selectItem(at: -1)
+                update(app.store, key)
+            }
+        }
+    }
+    
+    private func insertTag(_ title: String) {
+        for (index, item) in tagsPopup.menu!.items.enumerated() {
+            if item.title == title {
+                break
+            } else if item.isSeparatorItem || item.title >= title {
+                tagsPopup.menu!.insertItem(withTitle: title, action: #selector(toggleTag(_:)), keyEquivalent: "", at: index)
+                break
             }
         }
     }

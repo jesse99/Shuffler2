@@ -185,7 +185,26 @@ class FileSystemStore: Store {
         let tag = inTag.trimmingCharacters(in: .whitespaces)
         if tag != "" && !tags.contains(tag) {
             tags.add(tag)
+            allTags.add(tag)
 
+            let dirName = tags.makeName(rating)
+            if let newUrl = moveFileTo(dirName, fsKey.url) {
+                fsKey.updateUrl(newUrl)
+            }
+        }
+    }
+    
+    func removeTag(_ key: Key, _ inTag: String) {
+        let fsKey = key as! FileSystemKey
+        let dir = fsKey.url.deletingLastPathComponent()
+        
+        var (rating, tags) = getRatingAndTags(dir) ?? (Rating.normal, Tags.init())
+        if rating == .notShown {
+            rating = .normal
+        }
+        
+        let tag = inTag.trimmingCharacters(in: .whitespaces)
+        if tags.remove(tag) {
             let dirName = tags.makeName(rating)
             if let newUrl = moveFileTo(dirName, fsKey.url) {
                 fsKey.updateUrl(newUrl)

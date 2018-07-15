@@ -109,6 +109,7 @@ protocol Store {
 
     func getTags(_ key: Key) -> Tags
     func addTag(_ key: Key, _ tag: String)
+    func removeTag(_ key: Key, _ tag: String)
 
     // 0 => no scaling
     // -1 => max scaling
