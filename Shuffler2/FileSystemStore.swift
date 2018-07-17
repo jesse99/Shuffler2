@@ -472,8 +472,9 @@ class FileSystemStore: Store {
             let ext = file.pathExtension as CFString
             if let uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, ext, nil) {
 //                print("\(NSBitmapImageRep.imageTypes)")
-                for case let type as CFString in NSBitmapImageRep.imageTypes {
-                    if UTTypeConformsTo((uti.takeRetainedValue()), type) {
+                let fileType = uti.takeRetainedValue()
+                for case let type in NSBitmapImageRep.imageTypes {
+                    if UTTypeConformsTo(fileType, type as CFString) {
                         return true
                     }
                 }
