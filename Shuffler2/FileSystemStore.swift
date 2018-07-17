@@ -86,6 +86,7 @@ class FileSystemStore: Store {
             flipDirectories()
             directories = findInUseDirectories(rating)
         }
+        findShownTags()
 
         if let directory = randomDirectory(directories), let originalFile = randomFile(directory) {
             if let newFile = moveFile(directory, originalFile) {
@@ -346,6 +347,22 @@ class FileSystemStore: Store {
         }
         
         return directories
+    }
+    
+    private func findShownTags() {
+        let shown = root.appendingPathComponent("shown")
+        
+        let fs = FileManager.default
+        let options: FileManager.DirectoryEnumerationOptions = [.skipsPackageDescendants, .skipsHiddenFiles, .skipsSubdirectoryDescendants]
+        if let enumerator = fs.enumerator(at: shown, includingPropertiesForKeys: [.isDirectoryKey, .nameKey], options: options, errorHandler: nil) {
+            for case let dir as URL in enumerator {
+                if dir.hasDirectoryPath {
+                    if let (_, tags) = getRatingAndTags(dir) {
+                        addTags(tags)
+                    }
+                }
+            }
+        }
     }
     
     private func addTags(_ tags: Tags) {
