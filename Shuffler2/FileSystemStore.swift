@@ -377,9 +377,14 @@ class FileSystemStore: Store {
         let maxWeight = directories.reduce(0) {$0 + $1.rating.rawValue}
         if maxWeight > 0 {
             var n = Int(arc4random_uniform(UInt32(maxWeight)))
+//            print("maxWeight=\(maxWeight), n=\(n)")
+//            for d in directories {
+//                print("   \(d.url.lastPathComponent)")
+//            }
             for candidate in directories {
                 n -= candidate.rating.rawValue
                 if n <= 0 {
+//                    print("   found \(candidate.url.lastPathComponent)")
                     return candidate
                 }
             }
@@ -396,7 +401,7 @@ class FileSystemStore: Store {
     // or the file system changing out from underneath us (as much), or weird special cases as we empty out
     // the upcoming directory.
     private func randomFile(_ directory: Directory) -> URL? {
-        var n = Int(arc4random_uniform(100))    // to avoid spending too much time enumerating we'll use a 1 in 100 chance of picking each file
+        var n = Int(arc4random_uniform(1000))    // to avoid spending too much time enumerating we'll use a 1 in 1000 chance of picking each file
         var result: URL? = nil
         
         let start = DispatchTime.now()  // takes well under 10 ms to process 100 files
@@ -418,8 +423,12 @@ class FileSystemStore: Store {
                         break
                     }
                 } else if !candidate.hasDirectoryPath {
-                    let app = NSApp.delegate as! AppDelegate
-                    app.error("can't show \(candidate)")
+                    if canFixup(candidate) {    // TODO: at some point get rid of this
+                        fixup(candidate)
+                    } else {
+                        let app = NSApp.delegate as! AppDelegate
+                        app.error("can't show \(candidate)")
+                    }
                 }
             }
         }
@@ -443,12 +452,41 @@ class FileSystemStore: Store {
         return result
     }
 
+    private let regex = try! NSRegularExpression(pattern: "-\\d+$", options: [])
+
+    private func canFixup(_ url: URL) -> Bool {
+        let name = url.lastPathComponent
+        let range = NSRange(location: 0, length: name.utf16.count)
+        return regex.firstMatch(in: name, options: [], range: range) != nil
+    }
+    
+    private func fixup(_ url: URL) {
+        let newDir = url.deletingLastPathComponent()
+        let newFile = generateNewName(newDir, url)
+        do {
+            let fs = FileManager.default
+            try fs.moveItem(at: url, to: newFile)
+        } catch let error as NSError {
+            let app = NSApp.delegate as! AppDelegate
+            app.error("Couldn't move \(url) to \(newFile): \(error.localizedDescription)")
+        }
+    }
+    
     private func generateNewName(_ newDir: URL, _ originalFile: URL) -> URL {
         var i = 2
         let fs = FileManager.default
+
         var newFile = newDir.appendingPathComponent(originalFile.lastPathComponent)
+
+        let newExt = NSMutableString.init(string: newFile.pathExtension)
+        _ = regex.replaceMatches(in: newExt, options: [], range: NSRange(location: 0, length: newFile.pathExtension.utf16.count), withTemplate: "")
+        
+        let baseName = newFile.deletingPathExtension().lastPathComponent
+        let baseURL = newFile.deletingLastPathComponent()
+
         while fs.fileExists(atPath: newFile.path) { // note that this also returns true for directories
-            newFile = newDir.appendingPathComponent("\(originalFile.lastPathComponent)-\(i)")
+            newFile = baseURL.appendingPathComponent("\(baseName)-\(i)")
+            newFile = newFile.appendingPathExtension(String(newExt))
             i += 1
         }
         
