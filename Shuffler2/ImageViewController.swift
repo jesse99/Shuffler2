@@ -22,6 +22,9 @@ class ImageViewController: NSViewController {
         // Not sure why but couldn't get positioning to work in the ImageWindow.init method.
         let window = view.window
         window!.setFrame(screen.visibleFrame, display: true)
+
+        // Probably related: somehow the window height creeps up as images are made large.
+        windowSize = view.window!.frame.size
     }
     
     public func useRating(_ rating: Rating) {
@@ -144,7 +147,6 @@ class ImageViewController: NSViewController {
     private func setImage(_ data: Data, scaling: CGFloat, align: NSImageAlignment) -> Bool {
         if let rep = NSBitmapImageRep.init(data: data) {
             var imageSize = NSSize.init(width: rep.pixelsWide, height: rep.pixelsHigh)
-            let windowSize = view.window!.frame.size
             let maxScaling = min(windowSize.width/imageSize.width, windowSize.height/imageSize.height)
 //            print("windowSize = \(windowSize)")
 //            print("   maxScaling = \(maxScaling)")
@@ -169,6 +171,7 @@ class ImageViewController: NSViewController {
     
     private var images: [Key] = []
     private var currentIndex: Int = 0
-    private var rating = Rating.normal
+    private var rating = Rating.great
+    private var windowSize: CGSize = CGSize.init()
 }
 
