@@ -74,6 +74,7 @@ class ImageViewController: NSViewController {
                 if selectCurrent() {
                     let app = NSApp.delegate as! AppDelegate
                     app.resetTimer()
+                    break
                 } else {
                     images.remove(at: currentIndex)
                 }
@@ -175,7 +176,7 @@ class ImageViewController: NSViewController {
     
     private var images: [Key] = []
     private var currentIndex: Int = 0
-    private var rating = Rating.great
+    private var rating = Rating.great   // TODO: probably not a great default when first starting up (or just fallback to normal if there are no matches)
     private var windowSize: CGSize = CGSize.init()
 }
 
