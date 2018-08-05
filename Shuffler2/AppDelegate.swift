@@ -100,6 +100,13 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         timer.invalidate()
     }
     
+    func resetTimer() {
+        let secs = timer.timeInterval
+        
+        timer.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: secs, repeats: true, block: self.onTimer)
+    }
+    
     @IBAction func showRating(_ sender: Any) {
         let item = sender as! NSMenuItem
         if let rating = Rating.init(fromString: item.title) {

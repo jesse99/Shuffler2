@@ -72,7 +72,8 @@ class ImageViewController: NSViewController {
             if currentIndex > 0 {
                 currentIndex -= 1
                 if selectCurrent() {
-                    break
+                    let app = NSApp.delegate as! AppDelegate
+                    app.resetTimer()
                 } else {
                     images.remove(at: currentIndex)
                 }
@@ -87,6 +88,7 @@ class ImageViewController: NSViewController {
         if currentIndex >= 0 && currentIndex < images.count {
             let app = NSApp.delegate as! AppDelegate
             app.store.openImage(images[currentIndex])
+            app.resetTimer()
         } else {
             NSSound.beep()
         }
@@ -96,6 +98,7 @@ class ImageViewController: NSViewController {
         if currentIndex >= 0 && currentIndex < images.count {
             let app = NSApp.delegate as! AppDelegate
             app.store.showImage(images[currentIndex])
+            app.resetTimer()
         } else {
             NSSound.beep()
         }
@@ -105,7 +108,8 @@ class ImageViewController: NSViewController {
         if currentIndex >= 0 && currentIndex < images.count {
             let app = NSApp.delegate as! AppDelegate
             app.store.trashImage(images[currentIndex])
-            
+            app.resetTimer()
+
             images.remove(at: currentIndex)
             nextImage()
         } else {

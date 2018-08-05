@@ -91,6 +91,7 @@ class SettingsViewController: NSViewController {
             app.store.setAlignment(key, align)
             addNoneTag()
             app.imageView.refresh()
+            app.resetTimer()
         }
     }
     
@@ -100,6 +101,7 @@ class SettingsViewController: NSViewController {
             app.store.setScaling(key, 0)
             addNoneTag()
             app.imageView.refresh()
+            app.resetTimer()
         }
     }
     
@@ -109,6 +111,7 @@ class SettingsViewController: NSViewController {
             app.store.setScaling(key, -1)
             addNoneTag()
             app.imageView.refresh()
+            app.resetTimer()
         }
     }
     
@@ -119,6 +122,7 @@ class SettingsViewController: NSViewController {
             app.store.setScaling(key, item.tag)
             addNoneTag()
             app.imageView.refresh()
+            app.resetTimer()
         }
     }
     
@@ -132,6 +136,7 @@ class SettingsViewController: NSViewController {
             } else {
                 update(app.store, key)
             }
+            app.resetTimer()
         }
     }
     
@@ -146,6 +151,7 @@ class SettingsViewController: NSViewController {
                 }
                 update(app.store, key)
             }
+            app.resetTimer()
         }
     }
     
@@ -167,6 +173,7 @@ class SettingsViewController: NSViewController {
             if item.title != "None" {
                 removeNoneTag()
             }
+            app.resetTimer()
         }
     }
     
