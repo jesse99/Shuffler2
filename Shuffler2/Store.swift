@@ -96,6 +96,8 @@ protocol Key: CustomStringConvertible {
 
 /// Interface used to access images.
 protocol Store {
+    func postInit()
+    
     func randomImage(_ rating: Rating) -> Key?
     func loadImage(_ key: Key) -> Data?
 

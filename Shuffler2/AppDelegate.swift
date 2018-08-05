@@ -28,6 +28,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
 
         timer = Timer.scheduledTimer(withTimeInterval: 60.0, repeats: true, block: self.onTimer)
         checkInterval(60.0)
+        store.postInit()
         
         imageView.startedUp()
     }

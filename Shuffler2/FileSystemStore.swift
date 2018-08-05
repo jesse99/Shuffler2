@@ -80,6 +80,11 @@ class FileSystemStore: Store {
         self.root = URL.init(fileURLWithPath: root)
     }
     
+    func postInit() {
+        let upcoming = self.root.appendingPathComponent("upcoming")
+        cleanup(dir: upcoming)
+    }
+    
     func randomImage(_ rating: Rating) -> Key? {
         var directories = findInUseDirectories(rating)
         if directories.isEmpty {
@@ -463,11 +468,12 @@ class FileSystemStore: Store {
     private func fixup(_ url: URL) {
         let newDir = url.deletingLastPathComponent()
         let newFile = generateNewName(newDir, url)
+        let app = NSApp.delegate as! AppDelegate
         do {
             let fs = FileManager.default
             try fs.moveItem(at: url, to: newFile)
+            app.info("moved \(url) to \(newFile)")
         } catch let error as NSError {
-            let app = NSApp.delegate as! AppDelegate
             app.error("Couldn't move \(url) to \(newFile): \(error.localizedDescription)")
         }
     }
@@ -538,6 +544,40 @@ class FileSystemStore: Store {
         return false
     }
 
+    // The UI forces users to gradually build up tags and ratings for each image. This means that it's fairly
+    // common for directories like "good" to be created which will hardly ever be populated. This is kind of
+    // annoying so we'll blow them away here.
+    private func cleanup(dir: URL) {
+        let fs = FileManager.default
+        let options: FileManager.DirectoryEnumerationOptions = [.skipsHiddenFiles, .skipsSubdirectoryDescendants]
+        if let enumerator = fs.enumerator(at: dir, includingPropertiesForKeys: [.isDirectoryKey], options: options, errorHandler: nil) {
+            for case let dir as URL in enumerator {
+                if dir.hasDirectoryPath {
+                    if isEmptyDir(dir) {
+                        let app = NSApp.delegate as! AppDelegate
+                        do {
+                            try FileManager.default.trashItem(at: dir, resultingItemURL: nil)
+                            app.info("trashed empty \(dir)")
+                        } catch let error as NSError {
+                            app.error("couldn't trash \(dir): \(error.localizedDescription)")
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    // There doesn't appear to be a good way to get the number of directory items in Cocoa. AFAICT this is the most
+    // efficient way to do this w/o dropping down to low level calls.
+    private func isEmptyDir(_ url: URL) -> Bool {
+        let fs = FileManager.default
+        let options: FileManager.DirectoryEnumerationOptions = [.skipsHiddenFiles, .skipsSubdirectoryDescendants]
+        if let enumerator = fs.enumerator(at: url, includingPropertiesForKeys: [], options: options, errorHandler: nil) {
+            return false
+        }
+        return true
+    }
+    
     private struct Directory: CustomStringConvertible {
         let url: URL
         let rating: Rating
