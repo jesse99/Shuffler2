@@ -113,6 +113,7 @@
 				TargetAttributes = {
 					375E567020E948E10044020C = {
 						CreatedOnToolsVersion = 9.4.1;
+						LastSwiftMigration = 1010;
 						SystemCapabilities = {
 							com.apple.Sandbox = {
 								enabled = 0;
@@ -308,7 +309,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.app.mushin.Shuffler2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
@@ -326,7 +327,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.app.mushin.Shuffler2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
 		};
