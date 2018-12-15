@@ -111,7 +111,7 @@ class FileSystemStore: Store {
             }
         }
 
-        if let directory = randomDirectory(directories), let originalFile = randomFile(directory) {
+        if let (directory, originalFile) = randomImageFile(directories) {
             if let newFile = moveFile(directory, originalFile) {
                 return FileSystemKey.init(newFile)
             } else {
@@ -396,19 +396,31 @@ class FileSystemStore: Store {
         }
     }
     
+    private func randomImageFile(_ directories: [Directory]) -> (FileSystemStore.Directory, URL)? {
+        for _ in 0..<10 {
+            if let directory = randomDirectory(directories), let file = randomFile(directory) {
+                return (directory, file)
+            }
+        }
+
+        let app = NSApp.delegate as! AppDelegate
+        app.warn("couldn't find an image")
+        return nil
+    }
+    
     private func randomDirectory(_ directories: [Directory]) -> Directory? {
         let maxWeight = directories.reduce(0) {$0 + $1.rating.rawValue}
         if maxWeight > 0 {
             var n = Int(arc4random_uniform(UInt32(maxWeight)))
-            for dir in directories {
-                print("\(dir.url.lastPathComponent), weight=\(dir.rating.rawValue)")
-            }
-            print("maxWeight=\(maxWeight), n=\(n)")
+//            for dir in directories {
+//                print("\(dir.url.lastPathComponent), weight=\(dir.rating.rawValue)")
+//            }
+//            print("maxWeight=\(maxWeight), n=\(n)")
             for candidate in directories {
                 n -= candidate.rating.rawValue
-                print("   \(candidate.url.lastPathComponent), n=\(n)")
+//                print("   \(candidate.url.lastPathComponent), n=\(n)")
                 if n <= 0 {
-                    print("   found \(candidate.url.lastPathComponent)")
+//                    print("   found \(candidate.url.lastPathComponent)")
                     return candidate
                 }
             }
@@ -425,11 +437,11 @@ class FileSystemStore: Store {
     // or the file system changing out from underneath us (as much), or weird special cases as we empty out
     // the upcoming directory.
     private func randomFile(_ directory: Directory) -> URL? {
-        var n = Int(arc4random_uniform(1000))    // to avoid spending too much time enumerating we'll use a 1 in 1000 chance of picking each file
+        var n = Int(arc4random_uniform(100))    // to avoid spending too much time enumerating we'll use a 1 in 100 chance of picking each file
         var result: URL? = nil
         
-        let start = DispatchTime.now()  // takes well under 10 ms to process 100 files
-        var count = 0
+//        let start = DispatchTime.now()  // takes well under 10 ms to process 100 files
+//        var count = 0
         
         // It would be a bit nicer to start at a random spot in the directory (and maybe cycle around if need be).
         // But the high level APIs don't support that sort of random access iteration. Documentation is scarce
@@ -440,13 +452,13 @@ class FileSystemStore: Store {
         if let enumerator = fs.enumerator(at: directory.url, includingPropertiesForKeys: [.isDirectoryKey, .nameKey], options: options, errorHandler: nil) {
             for case let candidate as URL in enumerator {
                 if canShow(candidate) {
-                    count += 1
+//                    count += 1
                     n -= 1
                     result = candidate
                 } else if !candidate.hasDirectoryPath {
                     if canFixup(candidate) {    // TODO: at some point get rid of this
                         if let newURL = fixup(candidate) {
-                            count += 1
+//                            count += 1
                             n -= 1
                             result = newURL
                         }
@@ -461,21 +473,16 @@ class FileSystemStore: Store {
             }
         }
         
-        if result == nil {
-            let app = NSApp.delegate as! AppDelegate
-            app.warn("couldn't find an image in \(directory)")
-        }
-        
         // "0.1 second is about the limit for having the user feel that the system is reacting instantaneously"
         // see https://psychology.stackexchange.com/questions/1664/what-is-the-threshold-where-actions-are-perceived-as-instant
-        let end = DispatchTime.now()
-        let ns = end.uptimeNanoseconds - start.uptimeNanoseconds
-        let us = ns/1000
-        let ms = us/1000
-        if ms > 100 {
-            let app = NSApp.delegate as! AppDelegate
-            app.warn("took \(ms) ms to enumerate \(count) files")
-        }
+//        let end = DispatchTime.now()
+//        let ns = end.uptimeNanoseconds - start.uptimeNanoseconds
+//        let us = ns/1000
+//        let ms = us/1000
+//        if ms > 100 {
+//            let app = NSApp.delegate as! AppDelegate
+//            app.warn("took \(ms) ms to enumerate \(count) files")
+//        }
 
         return result
     }
