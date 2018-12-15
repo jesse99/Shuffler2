@@ -118,7 +118,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         }
     }
     
-    @objc func toggleTag(_ sender: Any) {
+    @objc func toggleShownTag(_ sender: Any) {
         let item = sender as! NSMenuItem
         toggleShown(item.title)
     }
@@ -227,7 +227,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
             if item.title == title {
                 break
             } else if item.isSeparatorItem || item.title >= title {
-                showTagsMenu.insertItem(withTitle: title, action: #selector(toggleTag(_:)), keyEquivalent: "", at: index)
+                showTagsMenu.insertItem(withTitle: title, action: #selector(toggleShownTag(_:)), keyEquivalent: "", at: index)
                 break
             }
         }

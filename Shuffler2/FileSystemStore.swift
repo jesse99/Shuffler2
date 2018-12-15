@@ -92,6 +92,24 @@ class FileSystemStore: Store {
             directories = findInUseDirectories(rating)
         }
         findShownTags()
+        
+        // Show notShown more often that other directories: there can be so many directories that we seldom
+        // show notShown.
+        if let dir = directories.first(where: {
+            if case Rating.notShown = $0.rating {
+                return true
+            } else {
+                return false
+            }
+        }) {
+            if Int(arc4random_uniform(4)) == 1 {
+                if let originalFile = randomFile(dir) {
+                    if let newFile = moveFile(dir, originalFile) {
+                        return FileSystemKey.init(newFile)
+                    }
+                }
+            }
+        }
 
         if let directory = randomDirectory(directories), let originalFile = randomFile(directory) {
             if let newFile = moveFile(directory, originalFile) {
@@ -382,14 +400,15 @@ class FileSystemStore: Store {
         let maxWeight = directories.reduce(0) {$0 + $1.rating.rawValue}
         if maxWeight > 0 {
             var n = Int(arc4random_uniform(UInt32(maxWeight)))
-//            print("maxWeight=\(maxWeight), n=\(n)")
-//            for d in directories {
-//                print("   \(d.url.lastPathComponent)")
-//            }
+            for dir in directories {
+                print("\(dir.url.lastPathComponent), weight=\(dir.rating.rawValue)")
+            }
+            print("maxWeight=\(maxWeight), n=\(n)")
             for candidate in directories {
                 n -= candidate.rating.rawValue
+                print("   \(candidate.url.lastPathComponent), n=\(n)")
                 if n <= 0 {
-//                    print("   found \(candidate.url.lastPathComponent)")
+                    print("   found \(candidate.url.lastPathComponent)")
                     return candidate
                 }
             }
@@ -424,16 +443,20 @@ class FileSystemStore: Store {
                     count += 1
                     n -= 1
                     result = candidate
-                    if n <= 0 {
-                        break
-                    }
                 } else if !candidate.hasDirectoryPath {
                     if canFixup(candidate) {    // TODO: at some point get rid of this
-                        fixup(candidate)
+                        if let newURL = fixup(candidate) {
+                            count += 1
+                            n -= 1
+                            result = newURL
+                        }
                     } else {
                         let app = NSApp.delegate as! AppDelegate
                         app.error("can't show \(candidate)")
                     }
+                }
+                if n <= 0 {
+                    break
                 }
             }
         }
@@ -465,17 +488,19 @@ class FileSystemStore: Store {
         return regex.firstMatch(in: name, options: [], range: range) != nil
     }
     
-    private func fixup(_ url: URL) {
+    private func fixup(_ url: URL) -> URL? {
         let newDir = url.deletingLastPathComponent()
         let newFile = generateNewName(newDir, url)
         let app = NSApp.delegate as! AppDelegate
         do {
             let fs = FileManager.default
             try fs.moveItem(at: url, to: newFile)
-            app.info("moved \(url) to \(newFile)")
+            //app.info("moved \(url) to \(newFile)")
+            return newFile
         } catch let error as NSError {
             app.error("Couldn't move \(url) to \(newFile): \(error.localizedDescription)")
         }
+        return nil
     }
     
     private func generateNewName(_ newDir: URL, _ originalFile: URL) -> URL {
@@ -520,7 +545,7 @@ class FileSystemStore: Store {
         let options: FileManager.DirectoryEnumerationOptions = [.skipsPackageDescendants, .skipsHiddenFiles]
         if let enumerator = fs.enumerator(at: dir.url, includingPropertiesForKeys: [.isDirectoryKey, .nameKey], options: options, errorHandler: nil) {
             for case let file as URL in enumerator {
-                if canShow(file) {
+                if canShow(file) || canFixup(file) {
                     return true
                 }
             }
@@ -572,7 +597,7 @@ class FileSystemStore: Store {
     private func isEmptyDir(_ url: URL) -> Bool {
         let fs = FileManager.default
         let options: FileManager.DirectoryEnumerationOptions = [.skipsHiddenFiles, .skipsSubdirectoryDescendants]
-        if let enumerator = fs.enumerator(at: url, includingPropertiesForKeys: [], options: options, errorHandler: nil) {
+        if fs.enumerator(at: url, includingPropertiesForKeys: [], options: options, errorHandler: nil) != nil {
             return false
         }
         return true
