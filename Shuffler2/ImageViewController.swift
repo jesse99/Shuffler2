@@ -17,6 +17,7 @@ class ImageViewController: NSViewController {
     }
     
     public func setupWindow(_ screenIndex: Int) {
+        self.screenIndex = screenIndex
         let screen = NSScreen.screens[screenIndex]
         
         // Not sure why but couldn't get positioning to work in the ImageWindow.init method.
@@ -150,6 +151,12 @@ class ImageViewController: NSViewController {
     }
     
     private func setImage(_ data: Data, scaling: CGFloat, align: NSImageAlignment) -> Bool {
+        // TODO: setupWindow also seems to be too early for this
+        let screen = NSScreen.screens[screenIndex]
+        let window = view.window
+        window!.setFrame(screen.visibleFrame, display: true)
+        windowSize = view.window!.frame.size
+
         if let rep = NSBitmapImageRep.init(data: data) {
             var imageSize = NSSize.init(width: rep.pixelsWide, height: rep.pixelsHigh)
             let maxScaling = min(windowSize.width/imageSize.width, windowSize.height/imageSize.height)
@@ -178,5 +185,6 @@ class ImageViewController: NSViewController {
     private var currentIndex: Int = 0
     private var rating = Rating.normal      // if this is changed then we'll also need to ensure that the menu is synced up
     private var windowSize: CGSize = CGSize.init()
+    private var screenIndex = 0
 }
 

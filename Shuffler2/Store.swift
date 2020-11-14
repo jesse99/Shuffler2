@@ -69,7 +69,7 @@ public class Tags: CustomStringConvertible {
     }
     
     public func remove(_ tag: String) -> Bool {
-        if let index = tags.index(of: tag.lowercased()) {
+        if let index = tags.firstIndex(of: tag.lowercased()) {
             tags.remove(at: index)
             return true
         }

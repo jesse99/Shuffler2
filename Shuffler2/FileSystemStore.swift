@@ -95,17 +95,19 @@ class FileSystemStore: Store {
         
         // Show notShown more often that other directories: there can be so many directories that we seldom
         // show notShown.
-        if let dir = directories.first(where: {
-            if case Rating.notShown = $0.rating {
-                return true
-            } else {
-                return false
-            }
-        }) {
-            if Int(arc4random_uniform(4)) == 1 {
-                if let originalFile = randomFile(dir) {
-                    if let newFile = moveFile(dir, originalFile) {
-                        return FileSystemKey.init(newFile)
+        if includeNotShown {
+            if let dir = directories.first(where: {
+                if case Rating.notShown = $0.rating {
+                    return true
+                } else {
+                    return false
+                }
+            }) {
+                if Int(arc4random_uniform(4)) == 1 {
+                    if let originalFile = randomFile(dir) {
+                        if let newFile = moveFile(dir, originalFile) {
+                            return FileSystemKey.init(newFile)
+                        }
                     }
                 }
             }
