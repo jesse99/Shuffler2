@@ -59,13 +59,21 @@ class FileSystemKey: Key {
     public func setString(_ name: String, _ value: String) {
         if let data = value.data(using: .utf8) {
 //            print("saving \(data as NSData)")
-            data.withUnsafeBytes {(ptr: UnsafePointer<UInt8>) -> Void in
-                let buffer = UnsafeRawPointer(ptr)
-                let result = setxattr(url.path, name, buffer, data.count, 0, 0)
+            data.withUnsafeBytes { (ptr: UnsafeRawBufferPointer) -> Void in
+//                let buffer = UnsafeRawPointer(ptr)
+                let result = setxattr(url.path, name, ptr.baseAddress, data.count, 0, 0)
                 if result < 0 {
                     print("failed to set \(name) to \(value)")
                 }
             }
+            
+//            data.withUnsafeBytes {(ptr: UnsafePointer<UInt8>) -> Void in
+//                let buffer = UnsafeRawPointer(ptr)
+//                let result = setxattr(url.path, name, buffer, data.count, 0, 0)
+//                if result < 0 {
+//                    print("failed to set \(name) to \(value)")
+//                }
+//            }
         }
     }
     
