@@ -162,49 +162,24 @@ class UrlsStore: Store {
     
     func postInit() {
         let upcoming = self.root.appendingPathComponent("upcoming")
-        cleanup(dir: upcoming)
+        cleanup(dir: upcoming)  // TODO: do we want to do this?
         self.reloadDirectories()
-        // TODO: populate directories and upcoming
     }
     
+    // TODO:
+    // record shown in a cicrcular buffer and don't reshow
+    //      use a new class for this?
     func randomImage(_ min_weight: Int) -> Key? {
+        let maxTries = 10
+        for _ in 0..<maxTries {
+            if let file = self.findImage(min_weight) {
+                return file
+            }
+        }
+        // TODO: clear recents list?
+        let app = NSApp.delegate as! AppDelegate
+        app.error("Failed to find a random image in \(maxTries) tries")
         return nil
-//        var directories = findInUseDirectories(rating)
-//        if directories.isEmpty {
-//            flipDirectories()
-//            directories = findInUseDirectories(rating)
-//        }
-//        findShownTags()
-//
-//        // Show notShown more often that other directories: there can be so many directories that we seldom
-//        // show notShown.
-//        if includeNotShown {
-//            if let dir = directories.first(where: {
-//                if case Rating.notShown = $0.rating {
-//                    return true
-//                } else {
-//                    return false
-//                }
-//            }) {
-//                if Int(arc4random_uniform(4)) == 1 {
-//                    if let originalFile = randomFile(dir) {
-//                        if let newFile = moveFile(dir, originalFile) {
-//                            return UrlSystemKey.init(newFile)
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//        if let (directory, originalFile) = randomImageFile(directories) {
-//            if let newFile = moveFile(directory, originalFile) {
-//                return UrlSystemKey.init(newFile)
-//            } else {
-//                return UrlSystemKey.init(originalFile) // not ideal but shouldn't actually cause a problem
-//            }
-//        } else {
-//            return nil
-//        }
     }
     
     func loadImage(_ key: Key) -> Data? {
@@ -344,51 +319,6 @@ class UrlsStore: Store {
     public var showTags = Tags.init()
     
     public var includeNotShown: Bool = true
-
-//    private func flipDirectories() {
-//        let newDir = root.appendingPathComponent("shown")
-//        let app = NSApp.delegate as! AppDelegate
-//
-//        // Move directories that still contain images into shown.
-//        let fs = FileManager.default
-//        let directories = findUpcomingDirectories()
-//        for dir in directories {
-//            if hasImage(dir) {
-//                var newUrl = newDir.appendingPathComponent(dir.url.lastPathComponent)
-//                do {
-//                    var index = 1
-//                    while fs.fileExists(atPath: newUrl.path) {
-//                        newUrl = newUrl.appendingPathComponent("\(index)")
-//                        index += 1
-//                    }
-//                    try fs.moveItem(at: dir.url, to: newUrl)
-//                    app.info("moved \(dir.url) to \(newUrl)")
-//                } catch let error as NSError {
-//                    app.error("couldn't move \(dir.url) to \(newUrl): \(error.localizedDescription)")
-//                }
-//            }
-//        }
-//
-//        // Flip the shown and upcoming directories.
-//        var srcDir = root.appendingPathComponent("shown")
-//        var dstDir = root.appendingPathComponent("new-upcoming")
-//        do {
-//            try fs.moveItem(at: srcDir, to: dstDir)
-//            app.info("moved \(srcDir) to \(dstDir)")
-//
-//            srcDir = root.appendingPathComponent("upcoming")
-//            dstDir = root.appendingPathComponent("shown")
-//            try fs.moveItem(at: srcDir, to: dstDir)
-//            app.info("moved \(srcDir) to \(dstDir)")
-//
-//            srcDir = root.appendingPathComponent("new-upcoming")
-//            dstDir = root.appendingPathComponent("upcoming")
-//            try fs.moveItem(at: srcDir, to: dstDir)
-//            app.info("moved \(srcDir) to \(dstDir)")
-//        } catch let error as NSError {
-//            app.error("couldn't move \(srcDir) to \(dstDir): \(error.localizedDescription)")
-//        }
-//    }
     
     private func moveFile(_ originalDir: Directory, _ originalFile: URL) -> URL? {
         let dirName = originalDir.tags.makeName2(originalDir.weight)
@@ -420,14 +350,111 @@ class UrlsStore: Store {
         return newFile
     }
     
-//    private func findInUseDirectories(_ rating: Rating) -> [Directory] {
-//        var directories = findUpcomingDirectories()
-//        directories = directories.filter {$0.rating >= rating}
-//        directories = directories.filter {self.tagsMatch($0)}
-//        directories = directories.filter {self.hasImage($0)}
-//        return directories
-//    }
+    private func addTags(_ tags: Tags) {
+        for tag in tags.tags {
+            if !allTags.contains(tag) {
+                allTags.add(tag)
+            }
+        }
+    }
     
+    private func findImage(_ min_weight: Int) -> Key? {
+        var candidate: URL? = nil
+        if includeNotShown && arc4random_uniform(3) == 0 {
+            candidate = self.findNotShownFile()
+        }
+
+        if candidate == nil {
+            candidate = self.findWeightedFile(min_weight);
+        }
+
+        if candidate == nil && includeNotShown {
+            candidate = self.findNotShownFile()
+        }
+
+        if let file = candidate {
+            if self.fileExists(file) {
+                if self.canShow(file) {
+                    if !self.isRecent(file) {
+                        self.addRecent(file)
+                        return UrlSystemKey.init(file)
+                    }
+                } else {
+                    let app = NSApp.delegate as! AppDelegate
+                    app.error("Can't show \(file)")
+                }
+            } else {
+                // We're trying to use a file which no longer exists. It's likely that the
+                // user has either deleted it or it has moved (e.g. because tags changed).
+                // So we'll reload all the files (the user can change the file system themselves
+                // so we need to handle this case here regardless, and handling it only here
+                // will minimize the number of reloads).
+                //
+                // Note that additions are handled by watching the not-shown directory (if the
+                // user directly adds to another directory then we'll eventually pick that up).
+                // TODO: do that
+                self.reloadDirectories()
+            }
+        }
+        return nil
+    }
+    
+    private func findNotShownFile() -> URL? {
+        for dir in self.directories {
+            if case .notShown = dir.weight {
+                let index = Int(arc4random_uniform(UInt32(dir.files.count)))
+                return dir.files[index]
+            }
+        }
+        return nil
+    }
+    
+    private func findWeightedFile(_ minWeight: Int) -> URL? {
+        let totalFiles = self.getWeightedTotal(minWeight)
+        if totalFiles > 0 {
+            var index = Int(arc4random_uniform(UInt32(totalFiles)))
+            for dir in self.directories {
+                if case .weight(let weight) = dir.weight, weight >= minWeight {
+                    if self.tagsMatch(dir) && index < weight*dir.files.count {
+                        return dir.files[index / weight]
+                    } else {
+                        index -= weight*dir.files.count
+                        assert(index >= 0)
+                    }
+                }
+            }
+            assert(false)
+        } else {
+            let app = NSApp.delegate as! AppDelegate
+            app.warn("no files with minWeight \(minWeight) and tags \(self.showTags)")
+            return nil
+        }
+    }
+    
+    private func getWeightedTotal(_ minWeight: Int) -> Int {
+        var count = 0
+        
+        for dir in self.directories {
+            if case .weight(let weight) = dir.weight, weight >= minWeight {
+                if self.tagsMatch(dir) {
+                    count += weight*dir.files.count
+                }
+            }
+        }
+        return count
+    }
+    
+    private func addRecent(_ file: URL) {
+        self.recentFiles.append(file)
+        while self.recentFiles.count > self.maxRecents {
+            self.recentFiles.remove(at: 0)
+        }
+    }
+    
+    private func isRecent(_ file: URL) -> Bool {
+        return self.recentFiles.firstIndex(of: file) != nil
+    }
+
     private func tagsMatch(_ dir: Directory) -> Bool {
         switch dir.weight {
         case .weight(_):
@@ -441,167 +468,9 @@ class UrlsStore: Store {
             return self.includeNotShown
         }
     }
-    
-//    private func findUpcomingDirectories() -> [Directory] {
-//        var directories: [Directory] = []
-//        allTags.removeAll()
-//
-//        let upcoming = root.appendingPathComponent("upcoming")
-//
-//        let fs = FileManager.default
-//        let options: FileManager.DirectoryEnumerationOptions = [.skipsPackageDescendants, .skipsHiddenFiles, .skipsSubdirectoryDescendants]
-//        if let enumerator = fs.enumerator(at: upcoming, includingPropertiesForKeys: [.isDirectoryKey, .nameKey], options: options, errorHandler: nil) {
-//            for case let dir as URL in enumerator {
-//                if dir.hasDirectoryPath {
-//                    if let (rating, tags) = getWeightAndTags(dir) {
-//                        addTags(tags)
-//                        directories.append(Directory(url: dir, rating: rating, tags: tags))
-//                    }
-//                }
-//            }
-//        }
-//
-//        return directories
-//    }
-    
-    private func findShownTags() {
-        let shown = root.appendingPathComponent("shown")
-        
-        let fs = FileManager.default
-        let options: FileManager.DirectoryEnumerationOptions = [.skipsPackageDescendants, .skipsHiddenFiles, .skipsSubdirectoryDescendants]
-        if let enumerator = fs.enumerator(at: shown, includingPropertiesForKeys: [.isDirectoryKey, .nameKey], options: options, errorHandler: nil) {
-            for case let dir as URL in enumerator {
-                if dir.hasDirectoryPath {
-                    if let (_, tags) = getWeightAndTags(dir) {
-                        addTags(tags)
-                    }
-                }
-            }
-        }
-    }
-    
-    private func addTags(_ tags: Tags) {
-        for tag in tags.tags {
-            if !allTags.contains(tag) {
-                allTags.add(tag)
-            }
-        }
-    }
-    
-//    private func randomImageFile(_ directories: [Directory]) -> (FileSystemStore.Directory, URL)? {
-//        for _ in 0..<10 {
-//            if let directory = randomDirectory(directories), let file = randomFile(directory) {
-//                return (directory, file)
-//            }
-//        }
-//
-//        let app = NSApp.delegate as! AppDelegate
-//        app.warn("couldn't find an image")
-//        return nil
-//    }
-//
-//    private func randomDirectory(_ directories: [Directory]) -> Directory? {
-//        let maxWeight = directories.reduce(0) {$0 + $1.rating.rawValue}
-//        if maxWeight > 0 {
-//            var n = Int(arc4random_uniform(UInt32(maxWeight)))
-////            for dir in directories {
-////                print("\(dir.url.lastPathComponent), weight=\(dir.rating.rawValue)")
-////            }
-////            print("maxWeight=\(maxWeight), n=\(n)")
-//            for candidate in directories {
-//                n -= candidate.rating.rawValue
-////                print("   \(candidate.url.lastPathComponent), n=\(n)")
-//                if n <= 0 {
-////                    print("   found \(candidate.url.lastPathComponent)")
-//                    return candidate
-//                }
-//            }
-//            assert(false)
-//        } else {
-//            // This is expected once we show all the pictures in incoming.
-//            let app = NSApp.delegate as! AppDelegate
-//            app.info("couldn't find a directory with an image")
-//        }
-//        return nil
-//    }
-    
-    // It's a lot easier to just do the enumeration on demand: we don't have to deal with thread coordination,
-    // or the file system changing out from underneath us (as much), or weird special cases as we empty out
-    // the upcoming directory.
-    private func randomFile(_ directory: Directory) -> URL? {
-        var n = Int(arc4random_uniform(100))    // to avoid spending too much time enumerating we'll use a 1 in 100 chance of picking each file
-        var result: URL? = nil
-        
-//        let start = DispatchTime.now()  // takes well under 10 ms to process 100 files
-//        var count = 0
-        
-        // It would be a bit nicer to start at a random spot in the directory (and maybe cycle around if need be).
-        // But the high level APIs don't support that sort of random access iteration. Documentation is scarce
-        // on the low level APIs but Darwin is derived from FreeBSD which has functions like seekdir which
-        // supports resuming iteration which could be made to work.
-        let fs = FileManager.default
-        let options: FileManager.DirectoryEnumerationOptions = [.skipsPackageDescendants, .skipsHiddenFiles]
-        if let enumerator = fs.enumerator(at: directory.url, includingPropertiesForKeys: [.isDirectoryKey, .nameKey], options: options, errorHandler: nil) {
-            for case let candidate as URL in enumerator {
-                if canShow(candidate) {
-//                    count += 1
-                    n -= 1
-                    result = candidate
-                } else if !candidate.hasDirectoryPath {
-                    if canFixup(candidate) {    // TODO: at some point get rid of this
-                        if let newURL = fixup(candidate) {
-//                            count += 1
-                            n -= 1
-                            result = newURL
-                        }
-                    } else {
-                        let app = NSApp.delegate as! AppDelegate
-                        app.error("can't show \(candidate)")
-                    }
-                }
-                if n <= 0 {
-                    break
-                }
-            }
-        }
-        
-        // "0.1 second is about the limit for having the user feel that the system is reacting instantaneously"
-        // see https://psychology.stackexchange.com/questions/1664/what-is-the-threshold-where-actions-are-perceived-as-instant
-//        let end = DispatchTime.now()
-//        let ns = end.uptimeNanoseconds - start.uptimeNanoseconds
-//        let us = ns/1000
-//        let ms = us/1000
-//        if ms > 100 {
-//            let app = NSApp.delegate as! AppDelegate
-//            app.warn("took \(ms) ms to enumerate \(count) files")
-//        }
-
-        return result
-    }
 
     private let regex = try! NSRegularExpression(pattern: "-\\d+$", options: [])
 
-    private func canFixup(_ url: URL) -> Bool {
-        let name = url.lastPathComponent
-        let range = NSRange(location: 0, length: name.utf16.count)
-        return regex.firstMatch(in: name, options: [], range: range) != nil
-    }
-    
-    private func fixup(_ url: URL) -> URL? {
-        let newDir = url.deletingLastPathComponent()
-        let newFile = generateNewName(newDir, url)
-        let app = NSApp.delegate as! AppDelegate
-        do {
-            let fs = FileManager.default
-            try fs.moveItem(at: url, to: newFile)
-            //app.info("moved \(url) to \(newFile)")
-            return newFile
-        } catch let error as NSError {
-            app.error("Couldn't move \(url) to \(newFile): \(error.localizedDescription)")
-        }
-        return nil
-    }
-    
     private func generateNewName(_ newDir: URL, _ originalFile: URL) -> URL {
         var i = 2
         let fs = FileManager.default
@@ -630,7 +499,7 @@ class UrlsStore: Store {
         let options: FileManager.DirectoryEnumerationOptions = [.skipsPackageDescendants, .skipsHiddenFiles]
         if let enumerator = fs.enumerator(at: dir.url, includingPropertiesForKeys: [.isDirectoryKey, .nameKey], options: options, errorHandler: nil) {
             for case let file as URL in enumerator {
-                if canShow(file) || canFixup(file) {
+                if canShow(file) {
                     return true
                 }
             }
@@ -638,6 +507,11 @@ class UrlsStore: Store {
         return false
     }
     
+    private func fileExists(_ file: URL) -> Bool {
+        let fs = FileManager.default
+        return fs.fileExists(atPath: file.path)
+    }
+
     private func canShow(_ file: URL) -> Bool {
         if !file.hasDirectoryPath {
             let ext = file.pathExtension as CFString
@@ -688,11 +562,13 @@ class UrlsStore: Store {
         return true
     }
     
+    // TODO: time how long this takes
     private func reloadDirectories() {
         self.directories.removeAll()
 
         let fs = FileManager.default
         let options: FileManager.DirectoryEnumerationOptions = [.skipsPackageDescendants, .skipsHiddenFiles, .skipsSubdirectoryDescendants]
+        var count = 0
         if let enumerator = fs.enumerator(at: self.root, includingPropertiesForKeys: [], options: options, errorHandler: nil) {
             for case let dir as URL in enumerator {
                 if dir.hasDirectoryPath {
@@ -701,12 +577,19 @@ class UrlsStore: Store {
                         self.addTags(tags)
                         let files: [URL] = self.loadFiles(dir)
                         self.directories.append(Directory(url: dir, weight: weight, tags: tags, files: files))
+                        count += files.count
                     } else {
                         let app = NSApp.delegate as! AppDelegate
                         app.warn("\(dir) isn't formatted correctly")
                     }
                 }
             }
+        }
+        
+        if count < 2*4*60 {
+            self.maxRecents = count/2
+        } else {
+            self.maxRecents = 4*60  // 4 hours worth at the default 1 min display interval
         }
     }
     
@@ -759,4 +642,7 @@ class UrlsStore: Store {
     private let root: URL
     private var allTags = Tags.init()
     private var directories: [Directory] = []
+    
+    private var maxRecents = 0
+    private var recentFiles: [URL] = []
 }

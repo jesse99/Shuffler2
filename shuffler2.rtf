@@ -11,22 +11,14 @@
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
 
 \f1\b \cf2 \
-how do we handle fs updates?\
-	could watch upcoming directory (and sub-directories?)\
-	don\'92t watch other directories\
-	when changing tag or weight would have to update buckets\
-		may also have to create a new bucket\
-		other possibility is to just let URLs dangle and rebuild when trying to use\
-		that might also handle cases like a user renaming the dir to something bad
-\f0\b0 \
-\
-currently using 80M (maxed out at 272M)\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0\b0 \cf2 currently using 80M (maxed out at 272M)\
 	adding URLs only get 136M\
 	with 56535 URLs\
-probably want to special case not shown\
-	e.g. use them 25% of the time\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
 
-\f1\b how would we handle not showing recents?\
+\f1\b \cf2 how would we handle not showing recents?\
 	could just track the last 1K or so\
 		60 would be an hour (at usual interval), so maybe 4*60\
 		might want to record both URL and hash\
@@ -37,17 +29,6 @@ probably want to special case not shown\
 \
 \pard\pardeftab720\partightenfactor0
 \cf3 \expnd0\expndtw0\kerning0
-100x more likely bucket\
-10x\
-1x\'a0\
-\'a0\
-random pic\
-\'a0\'a0\'a0\'a0\'a0\'a0 max_index = 100*len(first bucket) + 10*len(second bucket) + len(third bucket)\
-\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0 user can say use buckets of size N or greater\
-\'a0\'a0\'a0\'a0\'a0\'a0 index = rand(max_index)\
-\'a0\'a0\'a0\'a0\'a0\'a0 compute bucket number\
-\'a0\'a0\'a0\'a0\'a0\'a0 compute index into bucket\
-\'a0\'a0\'a0\'a0\'a0\'a0\
 1\
 10\
 100\
@@ -56,10 +37,12 @@ random pic\
 might want to print prob percent\
 \'a0\'a0\'a0\'a0\'a0\'a0 if it's .1% or greater\
 would be intereresting to log these for the different powers of 10\
+watch not-shown directory\
+be sure to search for TODOs\
 \
+\cf2 \kerning1\expnd0\expndtw0 \
 \
-\
-\cf2 \kerning1\expnd0\expndtw0 would be nice to handle fantastic differently\
+would be nice to handle fantastic differently\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
 \cf2 should we have a flip command?\
 	if not should we flip when fantastic is empty?\
