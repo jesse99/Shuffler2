@@ -1,13 +1,67 @@
 {\rtf1\ansi\ansicpg1252\cocoartf2580
-\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fswiss\fcharset0 Helvetica-Bold;}
-{\colortbl;\red255\green255\blue255;\red2\green2\blue2;}
-{\*\expandedcolortbl;;\csgenericrgb\c784\c784\c784;}
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fswiss\fcharset0 Helvetica-Bold;\f2\fnil\fcharset0 AndaleMono;
+}
+{\colortbl;\red255\green255\blue255;\red2\green2\blue2;\red2\green2\blue2;\red0\green0\blue0;
+\red170\green13\blue145;\red15\green104\blue160;\red92\green38\blue153;\red63\green110\blue116;}
+{\*\expandedcolortbl;;\csgenericrgb\c784\c784\c784;\cssrgb\c784\c784\c784;\csgenericrgb\c0\c0\c0;
+\csgenericrgb\c66500\c5200\c56900;\csgenericrgb\c5882\c40784\c62745;\csgenericrgb\c35900\c14900\c60100;\csgenericrgb\c24700\c43100\c45600;}
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
 
-\f0\fs48 \cf2 currently using 272M\
+\f0\fs48 \cf2 [Nib Loading] Failed to connect (alignTop) outlet from (Shuffler2.SettingsViewController) to (NSMenuItem): missing setter or instance variable\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\b \cf2 \
+how do we handle fs updates?\
+	could watch upcoming directory (and sub-directories?)\
+	don\'92t watch other directories\
+	when changing tag or weight would have to update buckets\
+		may also have to create a new bucket\
+		other possibility is to just let URLs dangle and rebuild when trying to use\
+		that might also handle cases like a user renaming the dir to something bad
+\f0\b0 \
 \
-would be nice to handle fantastic differently\
-should we have a flip command?\
+currently using 80M (maxed out at 272M)\
+	adding URLs only get 136M\
+	with 56535 URLs\
+probably want to special case not shown\
+	e.g. use them 25% of the time\
+
+\f1\b how would we handle not showing recents?\
+	could just track the last 1K or so\
+		60 would be an hour (at usual interval), so maybe 4*60\
+		might want to record both URL and hash\
+			URL would avoid actually loading the image\
+		could use the min of total_count/2 and 4*60\
+	don\'92t bother persisting this
+\f0\b0 \
+\
+\pard\pardeftab720\partightenfactor0
+\cf3 \expnd0\expndtw0\kerning0
+100x more likely bucket\
+10x\
+1x\'a0\
+\'a0\
+random pic\
+\'a0\'a0\'a0\'a0\'a0\'a0 max_index = 100*len(first bucket) + 10*len(second bucket) + len(third bucket)\
+\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0\'a0 user can say use buckets of size N or greater\
+\'a0\'a0\'a0\'a0\'a0\'a0 index = rand(max_index)\
+\'a0\'a0\'a0\'a0\'a0\'a0 compute bucket number\
+\'a0\'a0\'a0\'a0\'a0\'a0 compute index into bucket\
+\'a0\'a0\'a0\'a0\'a0\'a0\
+1\
+10\
+100\
+1,000\
+10,000\
+might want to print prob percent\
+\'a0\'a0\'a0\'a0\'a0\'a0 if it's .1% or greater\
+would be intereresting to log these for the different powers of 10\
+\
+\
+\
+\cf2 \kerning1\expnd0\expndtw0 would be nice to handle fantastic differently\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf2 should we have a flip command?\
 	if not should we flip when fantastic is empty?\
 		or maybe flip rating directories?\
 	make sure not-shown would work\
@@ -19,4 +73,13 @@ add an option to select the pictures directory\
 \
 note that the package manager 
 \f1\b does
-\f0\b0  work on mac}
+\f0\b0  work on mac\
+\
+\
+\pard\tx816\pardeftab816\pardirnatural\partightenfactor0
+
+\f2\fs34 \cf4     \cf5 func\cf4  \cf6 randomImage\cf4 (\cf6 _\cf4  min_weight: \cf7 Int\cf4 ) -> \cf8 Key\cf4 ?\
+\
+    \cf5 func\cf4  \cf6 getWeight\cf4 (\cf6 _\cf4  key: \cf8 Key\cf4 ) -> \cf7 Int\cf4 ?\
+    \cf5 func\cf4  \cf6 setWeight\cf4 (\cf6 _\cf4  key: \cf8 Key\cf4 , \cf6 _\cf4  weight: \cf7 Int\cf4 )\
+}

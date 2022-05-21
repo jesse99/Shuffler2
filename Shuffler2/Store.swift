@@ -3,48 +3,6 @@
 import Foundation
 import Cocoa
 
-/// Values are used to weight pictures so that they are shown more often.
-public enum Rating: Int, Comparable, CustomStringConvertible {
-    case normal = 1
-    case good = 4
-    case great = 16
-    case fantastic = 64
-    case notShown = 65
-
-    init?(fromString: String) {
-        switch fromString.lowercased() {
-        case "normal":
-            self = .normal
-        case "good":
-            self = .good
-        case "great":
-            self = .great
-        case "fantastic":
-            self = .fantastic
-        case "not-shown":
-            self = .notShown
-        default:
-            return nil
-        }
-    }
-    
-    public var description: String {
-        get {
-            switch self {
-            case .normal: return "normal"
-            case .good: return "good"
-            case .great: return "great"
-            case .fantastic: return "fantastic"
-            case .notShown: return "not-shown"
-            }
-        }
-    }
-
-    public static func <(lhs: Rating, rhs: Rating) -> Bool {
-        return lhs.rawValue < rhs.rawValue
-    }
-}
-
 public class Tags: CustomStringConvertible {
     init() {
         self.tags = []
@@ -94,11 +52,16 @@ public class Tags: CustomStringConvertible {
 protocol Key: CustomStringConvertible {
 }
 
+public enum Weight {
+    case weight(Int)
+    case notShown
+}
+
 /// Interface used to access images.
 protocol Store {
     func postInit()
     
-    func randomImage(_ rating: Rating) -> Key?
+    func randomImage(_ min_weight: Int) -> Key?
     func loadImage(_ key: Key) -> Data?
 
     func openImage(_ key: Key)
@@ -107,8 +70,8 @@ protocol Store {
 
     func getName(_ key: Key) -> String
 
-    func getRating(_ key: Key) -> Rating?
-    func setRating(_ key: Key, _ rating: Rating)
+    func getWeight(_ key: Key) -> Weight
+    func setWeight(_ key: Key, _ weight: Int)
 
     func getTags(_ key: Key) -> Tags
     func addTag(_ key: Key, _ tag: String)

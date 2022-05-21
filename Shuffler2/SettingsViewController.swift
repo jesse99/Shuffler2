@@ -13,18 +13,20 @@ class SettingsViewController: NSViewController {
     public func update(_ store: Store, _ key: Key) {
         currentKey = key
         view.window?.title = store.getName(key)
-        if let rating = store.getRating(key) {
-            switch rating {
-            case .notShown: ratingsPopup.selectItem(at: 0)
-            case .normal: ratingsPopup.selectItem(at: 1)
-            case .good: ratingsPopup.selectItem(at: 2)
-            case .great: ratingsPopup.selectItem(at: 3)
-            case .fantastic: ratingsPopup.selectItem(at: 4)
+        switch store.getWeight(key) {
+        case .notShown: ratingsPopup.selectItem(at: 0)
+        case .weight(let weight):
+            if weight == 1 {
+                ratingsPopup.selectItem(at: 1)
+            } else if weight == 10 {
+                ratingsPopup.selectItem(at: 2)
+            } else if weight == 100 {
+                ratingsPopup.selectItem(at: 3)
+            } else if weight == 100 {
+                ratingsPopup.selectItem(at: 4)
             }
-        } else {
-            ratingsPopup.selectItem(at: 0)
         }
-        
+
         let app = NSApp.delegate as! AppDelegate
         let scaling = store.getScaling(key)
         for item in scalingPopup.itemArray {
@@ -130,11 +132,11 @@ class SettingsViewController: NSViewController {
         let item = sender as! NSMenuItem
         if let key = currentKey {
             let app = NSApp.delegate as! AppDelegate
-            if let rating = Rating.init(fromString: item.title) {
-                app.store.setRating(key, rating)
+            if let weight = Int.init(item.title) {
+                app.store.setWeight(key, weight)
                 addNoneTag()
-            } else {
-                update(app.store, key)
+//            } else {
+//                update(app.store, key)
             }
             app.resetTimer()
         }

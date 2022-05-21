@@ -28,8 +28,8 @@ class ImageViewController: NSViewController {
         windowSize = view.window!.frame.size
     }
     
-    public func useRating(_ rating: Rating) {
-        self.rating = rating
+    public func useRating(_ weight: Int) {
+        self.weight = weight
     }
     
     public private(set) var currentScaling: CGFloat = 1.0
@@ -45,7 +45,7 @@ class ImageViewController: NSViewController {
         while true {
             if images.isEmpty || currentIndex >= images.count - 1 {
                 let app = NSApp.delegate as! AppDelegate
-                if let key = app.store.randomImage(rating) {
+                if let key = app.store.randomImage(self.weight) {
                     images.append(key)
                     if images.count > 100 {     // we only allow the user to go backwards 100x
                         images.remove(at: 0)
@@ -183,7 +183,7 @@ class ImageViewController: NSViewController {
     
     private var images: [Key] = []
     private var currentIndex: Int = 0
-    private var rating = Rating.normal      // if this is changed then we'll also need to ensure that the menu is synced up
+    private var weight = 1      // if this is changed then we'll also need to ensure that the menu is synced up
     private var windowSize: CGSize = CGSize.init()
     private var screenIndex = 0
 }

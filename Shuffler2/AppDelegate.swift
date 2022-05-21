@@ -2,8 +2,8 @@
 //  Copyright © 2018 MushinApps. All rights reserved.
 import Cocoa
 
-//let picturesDir = "/Users/jessejones/Source/Shuffler2/pictures"
-let picturesDir = "/Users/jessejones/Documents/Desktop Pictures"
+let picturesDir = "/Users/jessejones/Source/Shuffler2/pictures"     // TODO: for testing
+//let picturesDir = "/Users/jessejones/Documents/Desktop Pictures"
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDelegate {
@@ -110,11 +110,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     
     @IBAction func showRating(_ sender: Any) {
         let item = sender as! NSMenuItem
-        if let rating = Rating.init(fromString: item.title) {
-            imageView.useRating(rating)
+        if let weight = Int.init(item.title) {
+            imageView.useRating(weight)
             toggleItem(item)
         } else {
-            error("unknown rating: \(item.title)")
+            assert(false)
         }
     }
     
@@ -135,7 +135,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     }
     
     var imageView: ImageViewController! = nil
-    let store = FileSystemStore.init(picturesDir)
+    let store = UrlsStore.init(picturesDir)
     
     private func reschedule() {
         if timer.isValid {
@@ -277,5 +277,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
     private var logFile: FileHandle
     private var timer: Timer!
     private var settingsWindow: NSWindowController!
+    private var urls: [URL] = []
 }
 

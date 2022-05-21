@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="19529" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14113"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="19529"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -148,25 +149,25 @@
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <menu key="submenu" title="Show Rating" id="GQr-Kv-50Z">
                                                 <items>
-                                                    <menuItem title="Normal" id="VwL-ua-LxC">
+                                                    <menuItem title="1" id="VwL-ua-LxC">
                                                         <modifierMask key="keyEquivalentModifierMask"/>
                                                         <connections>
                                                             <action selector="showRating:" target="Ady-hI-5gd" id="ZTc-sw-v3t"/>
                                                         </connections>
                                                     </menuItem>
-                                                    <menuItem title="Good" id="Vml-ga-wMv">
+                                                    <menuItem title="10" id="Vml-ga-wMv">
                                                         <modifierMask key="keyEquivalentModifierMask"/>
                                                         <connections>
                                                             <action selector="showRating:" target="Ady-hI-5gd" id="cce-zN-W7e"/>
                                                         </connections>
                                                     </menuItem>
-                                                    <menuItem title="Great" id="lXM-fF-0k9">
+                                                    <menuItem title="100" id="lXM-fF-0k9">
                                                         <modifierMask key="keyEquivalentModifierMask"/>
                                                         <connections>
                                                             <action selector="showRating:" target="Ady-hI-5gd" id="bHM-Mp-Giw"/>
                                                         </connections>
                                                     </menuItem>
-                                                    <menuItem title="Fantastic" id="u47-0k-BzQ">
+                                                    <menuItem title="1000" id="u47-0k-BzQ">
                                                         <modifierMask key="keyEquivalentModifierMask"/>
                                                         <connections>
                                                             <action selector="showRating:" target="Ady-hI-5gd" id="l0E-Yy-IkB"/>
@@ -341,7 +342,7 @@
         <scene sceneID="R2V-B0-nI4">
             <objects>
                 <windowController id="B8D-0N-5wS" userLabel="Image WIndow" sceneMemberID="viewController">
-                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" hasShadow="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" animationBehavior="default" titleVisibility="hidden" id="IQv-IB-iLA" customClass="ImageWindow" customModule="Shuffler2" customModuleProvider="target">
+                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" hasShadow="NO" releasedWhenClosed="NO" animationBehavior="default" titleVisibility="hidden" id="IQv-IB-iLA" customClass="ImageWindow" customModule="Shuffler2" customModuleProvider="target">
                         <windowStyleMask key="styleMask" fullSizeContentView="YES"/>
                         <windowCollectionBehavior key="collectionBehavior" canJoinAllSpaces="YES" stationary="YES" ignoresCycle="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
@@ -391,7 +392,7 @@
         <scene sceneID="DLY-Xj-K3i">
             <objects>
                 <windowController storyboardIdentifier="SettingsWindowID" showSeguePresentationStyle="single" id="sbb-1X-NUW" userLabel="Settings Window" sceneMemberID="viewController">
-                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hasShadow="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="mqp-xj-CXo">
+                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hasShadow="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="mqp-xj-CXo">
                         <windowStyleMask key="styleMask" titled="YES" miniaturizable="YES" resizable="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
                         <rect key="contentRect" x="425" y="526" width="436" height="211"/>
@@ -418,7 +419,7 @@
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="8Fs-2L-pqK">
-                                <rect key="frame" x="18" y="108" width="68" height="22"/>
+                                <rect key="frame" x="18" y="109" width="68" height="21"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Rating:" id="TjX-hw-k1C">
                                     <font key="font" metaFont="system" size="18"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -426,7 +427,7 @@
                                 </textFieldCell>
                             </textField>
                             <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="cnE-8g-95C">
-                                <rect key="frame" x="102" y="105" width="236" height="26"/>
+                                <rect key="frame" x="101" y="106" width="238" height="25"/>
                                 <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="cKZ-Pi-TxS" id="2Vo-h1-nST">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
@@ -438,25 +439,25 @@
                                                     <action selector="setRating:" target="kUj-yh-cFb" id="yml-w8-jZh"/>
                                                 </connections>
                                             </menuItem>
-                                            <menuItem title="Normal" id="57D-DD-7U8">
+                                            <menuItem title="1" id="57D-DD-7U8">
                                                 <modifierMask key="keyEquivalentModifierMask"/>
                                                 <connections>
                                                     <action selector="setRating:" target="kUj-yh-cFb" id="ZMU-75-DOF"/>
                                                 </connections>
                                             </menuItem>
-                                            <menuItem title="Good" id="b7l-1V-UrH">
+                                            <menuItem title="10" id="b7l-1V-UrH">
                                                 <modifierMask key="keyEquivalentModifierMask"/>
                                                 <connections>
                                                     <action selector="setRating:" target="kUj-yh-cFb" id="M2B-nb-3oF"/>
                                                 </connections>
                                             </menuItem>
-                                            <menuItem title="Great" id="B1A-c7-Xb6">
+                                            <menuItem title="100" id="B1A-c7-Xb6">
                                                 <modifierMask key="keyEquivalentModifierMask"/>
                                                 <connections>
                                                     <action selector="setRating:" target="kUj-yh-cFb" id="h3f-Pd-6Mb"/>
                                                 </connections>
                                             </menuItem>
-                                            <menuItem title="Fantastic" id="0tb-M3-TJR">
+                                            <menuItem title="1000" id="0tb-M3-TJR">
                                                 <modifierMask key="keyEquivalentModifierMask"/>
                                                 <connections>
                                                     <action selector="setRating:" target="kUj-yh-cFb" id="M5M-wK-GAO"/>
@@ -468,7 +469,7 @@
                                 <accessibility identifier="Rating Menu"/>
                             </popUpButton>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="ULl-2M-WYS">
-                                <rect key="frame" x="18" y="71" width="68" height="22"/>
+                                <rect key="frame" x="18" y="73" width="68" height="21"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Scaling:" id="lNR-nX-SEj">
                                     <font key="font" metaFont="system" size="18"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -476,7 +477,7 @@
                                 </textFieldCell>
                             </textField>
                             <popUpButton verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="TNW-8D-lWD">
-                                <rect key="frame" x="102" y="69" width="191" height="26"/>
+                                <rect key="frame" x="101" y="70" width="193" height="25"/>
                                 <popUpButtonCell key="cell" type="push" title="None" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="jiI-Zz-NkK" id="e0U-cY-8sZ">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
@@ -522,7 +523,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="mcg-qi-vep">
-                                <rect key="frame" x="18" y="34" width="68" height="22"/>
+                                <rect key="frame" x="18" y="37" width="68" height="21"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Tags:" id="xWb-fh-UkM">
                                     <font key="font" metaFont="system" size="18"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -530,7 +531,7 @@
                                 </textFieldCell>
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="SDy-vP-9zZ">
-                                <rect key="frame" x="102" y="30" width="190" height="30"/>
+                                <rect key="frame" x="102" y="33" width="190" height="29"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="blah blah" id="NES-GR-yL7">
                                     <font key="font" size="24" name="Helvetica"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -538,7 +539,7 @@
                                 </textFieldCell>
                             </textField>
                             <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="MxU-3A-TfO">
-                                <rect key="frame" x="308" y="32" width="30" height="26"/>
+                                <rect key="frame" x="307" y="34" width="32" height="25"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="25" id="l8d-1P-zIa"/>
                                 </constraints>
@@ -559,7 +560,7 @@
                                 </popUpButtonCell>
                             </popUpButton>
                             <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7H9-CK-JRz">
-                                <rect key="frame" x="308" y="69" width="30" height="26"/>
+                                <rect key="frame" x="307" y="70" width="32" height="25"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="25" id="O0x-dL-Ag7"/>
                                 </constraints>
@@ -633,6 +634,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="NSApplicationIcon" width="128" height="128"/>
+        <image name="NSApplicationIcon" width="32" height="32"/>
     </resources>
 </document>

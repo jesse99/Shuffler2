@@ -16,6 +16,7 @@
 		375E567920E948E20044020C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 375E567820E948E20044020C /* Assets.xcassets */; };
 		375E567C20E948E20044020C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 375E567A20E948E20044020C /* Main.storyboard */; };
 		375E568520E94A8E0044020C /* shuffler2.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 375E568420E94A8E0044020C /* shuffler2.rtf */; };
+		376751E828372A62002FEAFA /* URLsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376751E728372A62002FEAFA /* URLsStore.swift */; };
 		37B5227420FBACA000D10F04 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37B5227320FBACA000D10F04 /* Utils.swift */; };
 /* End PBXBuildFile section */
 
@@ -32,6 +33,7 @@
 		375E567D20E948E20044020C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		375E567E20E948E20044020C /* Shuffler2.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Shuffler2.entitlements; sourceTree = "<group>"; };
 		375E568420E94A8E0044020C /* shuffler2.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = shuffler2.rtf; sourceTree = "<group>"; };
+		376751E728372A62002FEAFA /* URLsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLsStore.swift; sourceTree = "<group>"; };
 		37B5227320FBACA000D10F04 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -72,6 +74,7 @@
 				3705576620E966B700C38971 /* ImageWindow.swift */,
 				372F55D920FAD1BD009F59B6 /* SettingsViewController.swift */,
 				3705576820EB20E900C38971 /* Store.swift */,
+				376751E728372A62002FEAFA /* URLsStore.swift */,
 				37B5227320FBACA000D10F04 /* Utils.swift */,
 				375E567820E948E20044020C /* Assets.xcassets */,
 				375E567D20E948E20044020C /* Info.plist */,
@@ -163,6 +166,7 @@
 				375E567720E948E10044020C /* ImageViewController.swift in Sources */,
 				37B5227420FBACA000D10F04 /* Utils.swift in Sources */,
 				375E567520E948E10044020C /* AppDelegate.swift in Sources */,
+				376751E828372A62002FEAFA /* URLsStore.swift in Sources */,
 				3705576920EB20E900C38971 /* Store.swift in Sources */,
 				372F55DA20FAD1BD009F59B6 /* SettingsViewController.swift in Sources */,
 			);
