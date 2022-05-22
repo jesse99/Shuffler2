@@ -175,6 +175,10 @@ class UrlsStore: Store {
                 return file
             }
         }
+        
+        // TODO: with a fairly small number of images and large weights
+        // we can pretty easily land here if the large weight image(s)
+        // are recently shown.
         let app = NSApp.delegate as! AppDelegate
         app.error("Failed to find a random image in \(maxTries) tries")
         self.recentFiles.removeAll()
@@ -402,11 +406,13 @@ class UrlsStore: Store {
             var index = Int(arc4random_uniform(UInt32(totalFiles)))
             for dir in self.directories {
                 if case .weight(let weight) = dir.weight, weight >= minWeight {
-                    if self.tagsMatch(dir) && index < weight*dir.files.count {
-                        return dir.files[index / weight]
-                    } else {
-                        index -= weight*dir.files.count
-                        assert(index >= 0)
+                    if self.tagsMatch(dir) {
+                        if index < weight*dir.files.count {
+                            return dir.files[index / weight]
+                        } else {
+                            index -= weight*dir.files.count
+                            assert(index >= 0)
+                        }
                     }
                 }
             }

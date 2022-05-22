@@ -19,9 +19,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         NSUserNotificationCenter.default.delegate = self
         toggleItem(normalItem)
 
-        let newTags = store.availableTags()
-        addNewTags(newTags)
-                
         settingsWindow = (NSStoryboard.main?.instantiateController(withIdentifier: "SettingsWindowID") as! NSWindowController)
         settingsWindow.windowFrameAutosaveName = "settings-window"
         settingsWindow.showWindow(self)
@@ -30,6 +27,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         checkInterval(60.0)
         store.postInit()
         
+        let newTags = store.availableTags()
+        addNewTags(newTags)
+                
         imageView.startedUp()
     }
     
