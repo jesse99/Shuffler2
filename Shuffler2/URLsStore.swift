@@ -5,18 +5,20 @@ import Cocoa
 
 extension Tags {
     func makeName2(_ weight: Weight) -> String {
+        var dirName = ""
         switch weight {
         case .weight(let weight):
-            var dirName = "\(weight)"
-            
-            let tags = self.tags.sorted()
-            if !tags.isEmpty {
-                dirName += "-" + tags.joined(separator: "-")
-            }
-            return dirName
+            dirName = "\(weight)"
         case .notShown:
-            assert(false)   // notShown shouldn't have tags
+            // Note that we can land here if the pic is in not-shown and the user adds a tag.
+            dirName = "1"
         }
+        
+        let tags = self.tags.sorted()
+        if !tags.isEmpty {
+            dirName += "-" + tags.joined(separator: "-")
+        }
+        return dirName
     }
 }
 
@@ -26,6 +28,10 @@ class UrlSystemKey: Key {
         self.url = url
     }
 
+    // We need to do this so that the UI reflects changes the user makes. Note that
+    // URL is a struct so this won't change the entry in directories (which is good
+    // because that'll force a reload at some point and we'll then use the proper
+    // weight and tags).
     public func updateUrl(_ url: URL) {
         self.url = url
     }
@@ -90,10 +96,6 @@ class UrlSystemKey: Key {
 // Concrete store class based on a file system URL.
 class UrlsKey: Key {
     fileprivate init(_ url: URL) {
-        self.url = url
-    }
-    
-    public func updateUrl(_ url: URL) {
         self.url = url
     }
     
@@ -166,19 +168,16 @@ class UrlsStore: Store {
         self.reloadDirectories()
     }
     
-    // TODO:
-    // record shown in a cicrcular buffer and don't reshow
-    //      use a new class for this?
     func randomImage(_ min_weight: Int) -> Key? {
-        let maxTries = 10
+        let maxTries = 20
         for _ in 0..<maxTries {
             if let file = self.findImage(min_weight) {
                 return file
             }
         }
-        // TODO: clear recents list?
         let app = NSApp.delegate as! AppDelegate
         app.error("Failed to find a random image in \(maxTries) tries")
+        self.recentFiles.removeAll()
         return nil
     }
     
@@ -201,14 +200,13 @@ class UrlsStore: Store {
         }
     }
 
-    // TODO: have to update directories
     func trashImage(_ key: Key) {
-//        let fsKey = key as! UrlSystemKey
-//        do {
-//            try FileManager.default.trashItem(at: fsKey.url, resultingItemURL: nil)
-//        } catch {
-//            NSSound.beep()
-//        }
+        let fsKey = key as! UrlSystemKey
+        do {
+            try FileManager.default.trashItem(at: fsKey.url, resultingItemURL: nil)
+        } catch {
+            NSSound.beep()
+        }
     }
     
     func getName(_ key: Key) -> String {
@@ -218,25 +216,22 @@ class UrlsStore: Store {
     
     func getWeight(_ key: Key) -> Weight {
         let fsKey = key as! UrlSystemKey
-        let dir = fsKey.url.deletingLastPathComponent()
-        if let (weight, _) = getWeightAndTags(dir) {
+        if let (weight, _) = getWeightAndTags(fsKey.url) {
             return weight
         }
         return .weight(1)
     }
     
-    // TODO: have to update directories
     func setWeight(_ key: Key, _ weight: Int) {
-//        let fsKey = key as! UrlSystemKey
-//        let dir = fsKey.url.deletingLastPathComponent()
-//
-//        var dirName = rating.description
-//        if let (_, tags) = getWeightAndTags(dir) {
-//            dirName = tags.makeName2(weight)
-//        }
-//        if let newUrl = moveFileTo(dirName, fsKey.url) {
-//            fsKey.updateUrl(newUrl)
-//        }
+        let fsKey = key as! UrlSystemKey
+
+        var dirName = "\(weight)"
+        if let (_, tags) = getWeightAndTags(fsKey.url) {
+            dirName = tags.makeName2(.weight(weight))
+            if let newUrl = self.moveFileTo(dirName, fsKey.url) {
+                fsKey.updateUrl(newUrl)
+            }
+        }
     }
     
     func getScaling(_ key: Key) -> Int {
@@ -262,54 +257,42 @@ class UrlsStore: Store {
     
     func getTags(_ key: Key) -> Tags {
         let fsKey = key as! UrlSystemKey
-        let dir = fsKey.url.deletingLastPathComponent()
 
-        if let (_, tags) = getWeightAndTags(dir) {
+        if let (_, tags) = getWeightAndTags(fsKey.url) {
             return tags
         }
         return Tags.init()
     }
     
-    // TODO: have to update directories
     func addTag(_ key: Key, _ inTag: String) {
-//        let fsKey = key as! UrlSystemKey
-//        let dir = fsKey.url.deletingLastPathComponent()
-//
-//        var (weight, tags) = getWeightAndTags(dir) ?? (Rating.normal, Tags.init())
-//        if rating == .notShown {
-//            rating = .normal
-//        }
-//
-//        let tag = inTag.trimmingCharacters(in: .whitespaces)
-//        if tag != "" && !tags.contains(tag) {
-//            tags.add(tag)
-//            allTags.add(tag)
-//
-//            let dirName = tags.makeName2(weight)
-//            if let newUrl = moveFileTo(dirName, fsKey.url) {
-//                fsKey.updateUrl(newUrl)
-//            }
-//        }
+        let fsKey = key as! UrlSystemKey
+
+        if let (weight, tags) = getWeightAndTags(fsKey.url) {
+            let tag = inTag.trimmingCharacters(in: .whitespaces)
+            if tag != "" && !tags.contains(tag) {
+                tags.add(tag)
+                allTags.add(tag)
+
+                let dirName = tags.makeName2(weight)
+                if let newUrl = moveFileTo(dirName, fsKey.url) {
+                    fsKey.updateUrl(newUrl)
+                }
+            }
+        }
     }
     
-    // TODO: have to update directories
-    // TODO: mutators should no nothing if getWeightAndTags returns nil
     func removeTag(_ key: Key, _ inTag: String) {
-//        let fsKey = key as! UrlSystemKey
-//        let dir = fsKey.url.deletingLastPathComponent()
-//
-//        var (weight, tags) = getWeightAndTags(dir) ?? (Rating.normal, Tags.init())
-//        if rating == .notShown {
-//            rating = .normal
-//        }
-//
-//        let tag = inTag.trimmingCharacters(in: .whitespaces)
-//        if tags.remove(tag) {
-//            let dirName = tags.makeName2(weight)
-//            if let newUrl = moveFileTo(dirName, fsKey.url) {
-//                fsKey.updateUrl(newUrl)
-//            }
-//        }
+        let fsKey = key as! UrlSystemKey
+
+        if let (weight, tags) = getWeightAndTags(fsKey.url) {
+            let tag = inTag.trimmingCharacters(in: .whitespaces)
+            if tags.remove(tag) {
+                let dirName = tags.makeName2(weight)
+                if let newUrl = moveFileTo(dirName, fsKey.url) {
+                    fsKey.updateUrl(newUrl)
+                }
+            }
+        }
     }
     
     func availableTags() -> Tags {
@@ -320,16 +303,9 @@ class UrlsStore: Store {
     
     public var includeNotShown: Bool = true
     
-    private func moveFile(_ originalDir: Directory, _ originalFile: URL) -> URL? {
-        let dirName = originalDir.tags.makeName2(originalDir.weight)
-        return moveFileTo(dirName, originalFile)
-    }
-    
     private func moveFileTo(_ dirName: String, _ originalFile: URL) -> URL? {
-        var newDir = root.appendingPathComponent("shown")
-        newDir = newDir.appendingPathComponent(dirName)
-
         let fs = FileManager.default
+        let newDir = root.appendingPathComponent(dirName)
         do {
             try fs.createDirectory(at: newDir, withIntermediateDirectories: true, attributes: [:])
         } catch let error as NSError {
@@ -341,12 +317,13 @@ class UrlsStore: Store {
         let newFile = generateNewName(newDir, originalFile)
         do {
             try fs.moveItem(at: originalFile, to: newFile)
+//            print("moved file from \(originalFile) to \(newFile)")
         } catch let error as NSError {
             let app = NSApp.delegate as! AppDelegate
             app.error("Couldn't move \(originalFile) to \(newFile): \(error.localizedDescription)")
             return nil
         }
-
+        
         return newFile
     }
     
@@ -393,6 +370,7 @@ class UrlsStore: Store {
                 // Note that additions are handled by watching the not-shown directory (if the
                 // user directly adds to another directory then we'll eventually pick that up).
                 // TODO: do that
+                print("reloading because file no longer exists")
                 self.reloadDirectories()
             }
         }
@@ -401,7 +379,7 @@ class UrlsStore: Store {
     
     private func findNotShownFile() -> URL? {
         for dir in self.directories {
-            if case .notShown = dir.weight {
+            if case .notShown = dir.weight, dir.files.count > 0 {
                 let index = Int(arc4random_uniform(UInt32(dir.files.count)))
                 return dir.files[index]
             }
@@ -490,21 +468,6 @@ class UrlsStore: Store {
         }
         
         return newFile
-    }
-    
-    private func hasImage(_ dir: Directory) -> Bool {
-        let fs = FileManager.default
-        
-        // TODO: might want to special case aliases
-        let options: FileManager.DirectoryEnumerationOptions = [.skipsPackageDescendants, .skipsHiddenFiles]
-        if let enumerator = fs.enumerator(at: dir.url, includingPropertiesForKeys: [.isDirectoryKey, .nameKey], options: options, errorHandler: nil) {
-            for case let file as URL in enumerator {
-                if canShow(file) {
-                    return true
-                }
-            }
-        }
-        return false
     }
     
     private func fileExists(_ file: URL) -> Bool {
@@ -610,11 +573,14 @@ class UrlsStore: Store {
         return files
     }
     
-    // This will return nil if the file no longer exists or edge cases like the user
-    // renaming a directory to
-    private func getWeightAndTags(_ dir: URL) -> (Weight, Tags)? {
-        // TODO: this should pop off the last component until the parent dir is root
-        // (so callers don't need to pop)
+    // This will return nil if the file no longer exists. Most often this will be because
+    // the user changed the weight or tags and Shuffler moved the file.
+    private func getWeightAndTags(_ item: URL) -> (Weight, Tags)? {
+        var dir = item
+        while dir != self.root.appendingPathComponent(dir.lastPathComponent) {
+            dir = dir.deletingLastPathComponent()
+        }
+        
         let name = dir.lastPathComponent
         if name == "not-shown" {
             return (.notShown, tags: Tags.init())

@@ -22,7 +22,7 @@ class SettingsViewController: NSViewController {
                 ratingsPopup.selectItem(at: 2)
             } else if weight == 100 {
                 ratingsPopup.selectItem(at: 3)
-            } else if weight == 100 {
+            } else if weight == 1000 {
                 ratingsPopup.selectItem(at: 4)
             }
         }

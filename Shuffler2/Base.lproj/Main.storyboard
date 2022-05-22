@@ -621,7 +621,6 @@
                     </view>
                     <connections>
                         <outlet property="alignMenu" destination="SDh-bs-tAf" id="3od-qV-B1t"/>
-                        <outlet property="alignTop" destination="h90-5g-dfh" id="yXz-s8-ijm"/>
                         <outlet property="ratingsPopup" destination="cnE-8g-95C" id="TCR-Z4-nNY"/>
                         <outlet property="scalingPopup" destination="TNW-8D-lWD" id="Ege-Fp-ejo"/>
                         <outlet property="tagsLabel" destination="SDy-vP-9zZ" id="JSg-l4-1pV"/>
