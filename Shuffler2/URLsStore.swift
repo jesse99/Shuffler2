@@ -350,7 +350,10 @@ class UrlsStore: Store {
     
     private func findImage(_ min_weight: Int) -> Key? {
         var candidate: URL? = nil
-        if includeNotShown && arc4random_uniform(3) == 0 {
+        if self.includeNotShown && arc4random_uniform(3) == 0 {
+            if self.notShownNeedsReload() {
+                self.reloadNotShown()
+            }
             candidate = self.findNotShownFile()
         }
 
@@ -382,7 +385,6 @@ class UrlsStore: Store {
                 //
                 // Note that additions are handled by watching the not-shown directory (if the
                 // user directly adds to another directory then we'll eventually pick that up).
-                // TODO: do that
                 print("reloading because file no longer exists")
                 self.reloadDirectories()
             }
@@ -538,6 +540,39 @@ class UrlsStore: Store {
             return false
         }
         return true
+    }
+    
+    private func findNotShown() -> Directory? {
+        for dir in self.directories {
+            if case .notShown = dir.weight {
+                return dir
+            }
+        }
+        return nil
+    }
+    
+    // TODO: ideally we'd watch the not-shown directory (see https://stackoverflow.com/questions/24150061/how-to-monitor-a-folder-for-new-files-in-swift)
+    // but that involves quite a bit of machinery. So we'll just reload that directory each time
+    // we attempt to use it if we think it has only a few files (if it has a lot of files then
+    // we have files to work with and, once the user tags them, we'll do a full reload when that
+    // file is attempted to be re-used).
+    private func notShownNeedsReload() -> Bool {
+        return (self.findNotShown()?.files.count ?? 1000) < 100
+    }
+    
+    private func reloadNotShown() {
+        if let dir = self.findNotShown() {
+            let files = self.loadFiles(dir.url)
+            let newDir = Directory(url: dir.url, weight: dir.weight, tags: dir.tags, files: files)
+            if let index = self.directories.firstIndex(where: {
+                switch $0.weight {
+                case .notShown: return true
+                case .weight(_): return false
+                }
+            }) {
+                self.directories[index] = newDir
+            }
+        }
     }
     
     // TODO: time how long this takes
