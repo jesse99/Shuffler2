@@ -32,6 +32,10 @@ class ImageViewController: NSViewController {
         self.weight = weight
     }
     
+    public func minWeight() -> Int {
+        return self.weight
+    }
+    
     public private(set) var currentScaling: CGFloat = 1.0
 
     public func refresh() {

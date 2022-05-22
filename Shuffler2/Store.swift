@@ -70,7 +70,7 @@ protocol Store {
 
     func getName(_ key: Key) -> String
 
-    func getWeight(_ key: Key) -> Weight
+    func getWeight(_ key: Key, _ minWeight: Int) -> (Weight, String)
     func setWeight(_ key: Key, _ weight: Int)
 
     func getTags(_ key: Key) -> Tags

@@ -13,7 +13,10 @@ class SettingsViewController: NSViewController {
     public func update(_ store: Store, _ key: Key) {
         currentKey = key
         view.window?.title = store.getName(key)
-        switch store.getWeight(key) {
+
+        let app = NSApp.delegate as! AppDelegate
+        let (weight, title) = store.getWeight(key, app.imageView.minWeight())
+        switch weight {
         case .notShown: ratingsPopup.selectItem(at: 0)
         case .weight(let weight):
             if weight == 1 {
@@ -25,9 +28,9 @@ class SettingsViewController: NSViewController {
             } else if weight == 1000 {
                 ratingsPopup.selectItem(at: 4)
             }
+            ratingsPopup.selectedItem!.title = title
         }
 
-        let app = NSApp.delegate as! AppDelegate
         let scaling = store.getScaling(key)
         for item in scalingPopup.itemArray {
             if item.tag == scaling {

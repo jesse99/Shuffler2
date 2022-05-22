@@ -134,7 +134,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         }
     }
     
-    var imageView: ImageViewController! = nil
+    public var imageView: ImageViewController! = nil
     let store = UrlsStore.init(picturesDir)
     
     private func reschedule() {

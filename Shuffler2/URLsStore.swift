@@ -214,12 +214,21 @@ class UrlsStore: Store {
         return fsKey.url.deletingPathExtension().lastPathComponent
     }
     
-    func getWeight(_ key: Key) -> Weight {
+    func getWeight(_ key: Key, _ minWeight: Int) -> (Weight, String) {
         let fsKey = key as! UrlSystemKey
         if let (weight, _) = getWeightAndTags(fsKey.url) {
-            return weight
+            switch weight {
+            case .notShown: return (weight, "")
+            case .weight(let value):
+                var suffix = ""
+                let total = self.getWeightedTotal(minWeight)
+                let p = 100.0*Double(value)/Double(total)
+                if p > 0.1 {
+                    suffix = String(format: "   %.1f%%", p)
+                }
+                return (weight, "\(value)\(suffix)")            }
         }
-        return .weight(1)
+        return (.weight(1), "1")
     }
     
     func setWeight(_ key: Key, _ weight: Int) {
